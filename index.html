@@ -1,0 +1,222 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title> INFO3300 Project 2 </title>
+  <h3> Should you move to Canada? </h3>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=PT+Sans" />
+  <link rel='stylesheet' type='text/css' href='css/style.css'>
+</head>
+
+<body>
+
+<div id='part1'> 
+    Hover over to see exact item name.
+    <figure>
+        <figcaption> Click me! </figcaption>
+        <img onclick="country(this)" src='images/us.png' id='flag'></img>
+    </figure>
+
+    <svg width='1000' height='600' id='usPrices'></svg>
+    <svg width='1000' height='600' id='canPrices' style='display: none'></svg>
+</div>
+
+<script> 
+
+   function country() {
+        var us = document.getElementById("usPrices");
+        var can = document.getElementById("canPrices");
+        var flag = document.getElementById("flag");
+        if (us.style.display == 'none') {
+            us.style.display = 'block';
+            can.style.display = 'none';
+            flag.src = 'images/us.png';
+        } else if (can.style.display == 'none') {
+            us.style.display = 'none';
+            can.style.display = 'block';
+            flag.src = 'images/canada.png';
+        };
+    };
+
+</script>
+
+<script>
+
+    var dateParse = d3.timeParse("%m/%d/%Y");
+
+    function processing(row, index, columns) {
+        row.Date = dateParse(row.Date);
+        return row;
+    }
+
+    function callback(err,data) {
+        
+        //consulted https://bl.ocks.org/mbostock/3884955
+        var items = data.columns.slice(1).map(function(item) {
+            return {
+                item: item,
+                prices: data.map(function(attr) {
+                    return {
+                        Date: attr.Date,
+                        Price: Number(attr[item])
+                    };
+                })
+            };
+        });
+
+        //x scale and y scale, z scale for items
+        var xScale1 = d3.scaleTime()
+                        .domain(d3.extent(data, d => d.Date))
+                        .range([80,980]);
+
+        // var yScale1 = d3.scaleLinear()
+        //                 .domain([d3.min(items, function(d) { return d3.min(d.prices, function(p) { return p.Price; }); }) ,d3.max(items, function(d) { return d3.max(d.prices, function(p) { return p.Price; }); })])
+        //                 .range([550,50]);
+        var yScale1 = d3.scaleLinear()
+                        .domain([0,6.3])
+                        .range([550,50]);
+                
+        var zScale1 = d3.scaleOrdinal(d3.schemeCategory20)
+                        .domain(items.map(function(items) { return items.items; }));
+
+        var line = d3.line()
+            .x(d => xScale1(d.Date))
+            .y(d => yScale1(d.Price));
+
+        if (items[0].prices[0].Price == 3.003) {
+            
+            var USPricesGraph = d3.select("#usPrices");
+
+            //add gridlines
+            USPricesGraph.append("g")         
+                .attr("class","vLines")
+                .attr("transform","translate(0,50)")
+                .call(d3.axisBottom(xScale1)
+                    .tickSize(500)
+                    .tickFormat("")
+                );
+
+            var item = USPricesGraph.append('g')
+                        .selectAll('.item')
+                        .data(items)
+                        .enter().append("g")
+                        .attr("class","item");
+
+            //add axes
+            USPricesGraph.append('g')
+                .attr('transform','translate(0,550)')
+                .call(d3.axisBottom(xScale1));
+
+            USPricesGraph.append('g')
+                .attr('transform','translate(80,0)')
+                .call(d3.axisLeft(yScale1));
+
+            //add text
+            USPricesGraph.append('text')
+                .attr('transform','rotate(270) translate(-340,30)')
+                .attr('class','labels')
+                .text("Price");
+
+            USPricesGraph.append('text')
+                .attr('transform','translate(520,590)')
+                .attr('class','labels')
+                .text("Date");
+
+            USPricesGraph.append('text')
+                .attr('transform', 'translate(80,30)')
+                .attr('class','labels')
+                .text("Average Prices in US");
+
+        } else {
+
+            var CanPricesGraph = d3.select("#canPrices");
+
+            //add gridlines
+            CanPricesGraph.append("g")         
+                .attr("class","vLines")
+                .attr("transform","translate(0,50)")
+                .call(d3.axisBottom(xScale1)
+                    .tickSize(500)
+                    .tickFormat("")
+                );
+
+            var item = CanPricesGraph.append('g')
+                        .selectAll('.item')
+                        .data(items)
+                        .enter().append("g")
+                        .attr("class","item");
+
+            //add axes
+            CanPricesGraph.append('g')
+                .attr('transform','translate(0,550)')
+                .call(d3.axisBottom(xScale1));
+
+            CanPricesGraph.append('g')
+                .attr('transform','translate(80,0)')
+                .call(d3.axisLeft(yScale1));
+
+            //add text
+            CanPricesGraph.append('text')
+                .attr('transform','rotate(270) translate(-340,30)')
+                .attr('class','labels')
+                .text("Price");
+
+            CanPricesGraph.append('text')
+                .attr('transform','translate(520,590)')
+                .attr('class','labels')
+                .text("Date");
+
+            CanPricesGraph.append('text')
+                .attr('transform', 'translate(80,30)')
+                .attr('class','labels')
+                .text("Average Prices in Canada");
+        }
+        //append text labels and paths
+        var itemTexts = item.append("text")
+            .datum(function(d) { return {item: d.item, price: d.prices[d.prices.length-1]}; })
+            .attr("transform", function(d) {return "translate("+xScale1(d.price.Date) + "," + yScale1(d.price.Price) + ")"; })
+            .attr("x",-150)
+            .attr("y",-55)
+            .style("fill",function(d) {return zScale1(d.item); })
+            .text(function(d) {return d.item; })
+            .attr('id','priceLabels');
+
+        //add mouseover effect, consulted https://stackoverflow.com/questions/40556385/d3-how-can-i-show-hide-a-text-element-when-hovering-a-circle-element-created-f
+        var itemLines = item.append("path")
+            .attr("class","line")
+            .attr("d",function(d) { return line(d.prices); })
+            .style("stroke",function(d) { return zScale1(d.item); })
+            .style("fill","none")
+            .on("mouseover",function(d){
+                var textDisplay = itemTexts.filter(function(f) {
+                    return f.item == d.item;
+                });
+                var itemDisplay = itemLines.filter(function(f) {
+                    return f.item != d.item;
+                });
+                textDisplay.style("opacity",1)
+                itemDisplay.style("opacity",0.2);
+            })
+            .on("mouseout",function(d) {
+                var textDisplay = itemTexts.filter(function(f) {
+                    return f.item == d.item;
+                });
+                var itemDisplay = itemLines.filter(function(f) {
+                    return f.item != d.item;
+                });
+                textDisplay.style("opacity",0)
+                itemLines.style("opacity",1);
+            });
+    };
+
+    d3.csv("datasets/us-cpi.csv",processing, callback);
+    d3.csv("datasets/canada-cpi.csv",processing,callback);
+
+</script>
+
+</body>
+
+</html>

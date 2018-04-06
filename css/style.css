@@ -1,0 +1,37 @@
+body {
+    font-family:"PT Sans";
+}
+
+svg {
+    border: solid #ccc 1px;
+}
+
+.labels {
+    font-family:sans-serif; 
+    font-size:16px; 
+}
+
+.vLines line { 
+    stroke: lightgrey; 
+    stroke-width:1.5; 
+    opacity:0.5;
+}
+
+.vLines path { 
+    stroke-width: 0; 
+}
+
+.item {
+    stroke-width: 3;
+}
+
+figure {
+    float: right; 
+    margin-right:100px;
+}
+
+#priceLabels {
+    opacity: 0; 
+    font-size:20px; 
+    font-weight:800;
+}
