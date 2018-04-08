@@ -48,6 +48,10 @@ Divided the average prices by the CPI values/100 in each month to get the real p
 ## Us-2016-prices.csv, canada-2016-prices.csv <br/>
 Small tables containing the 2016 price data for ease of computation in second visualization (best and worst items to purchase in the United States). 
 
+## Us-consumption.csv <br/>
+Consumption data per capita for all dairy products in the United States in pounds from 2000 to 2014. <br/><br/>
+“Dairy products: Per capita consumption, United States (Annual)” https://www.ers.usda.gov/data-products/dairy-data/ 
+
 ## Us-farms-income.csv <br/>
 Heavily pre-processed dataset containing information on the number of farms and cows, total production and profits, and a profit breakdown by gallons/farms/cows annually from 2000 - 2014. Information is gathered from many different sources, and unit conversions / assumptions about data accuracy were made to reach the numbers presented. Subsidies is equal to the amount of money the U.S. government subsidizes the dairy industry by yearly, earned profits are the profits that are earned from market sales, and total profits are equal to the sum of subsidies + earned profits. <br/><br/>
 Amount of production (pounds, required conversion to gallons): http://future.aae.wisc.edu/data/annual_values/by_area/99?period=complete&tab=production <br/>
