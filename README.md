@@ -33,7 +33,7 @@ Divided the average prices by the CPI values/100 in each month to get the real p
 Small tables containing the 2016 price data for ease of computation in second visualization (best and worst items to purchase in the United States). 
 
 ## Us-farms-income.csv <br/>
-Heavily pre-processed dataset containing information on the number of farms and cows, total production and profits, and a profit breakdown by gallons/farms/cows annually from 2000 - 2014. Information is gathered from many different sources, and unit conversions / assumptions about data accuracy were made to reach the numbers presented. Subsidies is equal to the amount of money the U.S. government subsidizes the dairy industry by yearly, earned profits are the profits that are earned from market sales, and total profits are equal to the sum of subsidies + earned profits. <br/>
+Heavily pre-processed dataset containing information on the number of farms and cows, total production and profits, and a profit breakdown by gallons/farms/cows annually from 2000 - 2014. Information is gathered from many different sources, and unit conversions / assumptions about data accuracy were made to reach the numbers presented. Subsidies is equal to the amount of money the U.S. government subsidizes the dairy industry by yearly, earned profits are the profits that are earned from market sales, and total profits are equal to the sum of subsidies + earned profits. <br/><br/>
 Amount of production (pounds, required conversion to gallons): http://future.aae.wisc.edu/data/annual_values/by_area/99?period=complete&tab=production <br/>
 Farm income data (earned profits = value of production - operating costs - wages - farm overhead - rent (based on canadian data collection method)): https://www.ers.usda.gov/data-products/commodity-costs-and-returns/commodity-costs-and-returns/#Recent%20Costs%20and%20Returns:%20Milk <br/>
 Farm subsidies: https://farm.ewg.org/progdetail.php?fips=00000&progcode=dairy <br/>
@@ -42,7 +42,7 @@ Number of dairy farms: https://www.hoards.com/sites/default/files/Fewer%20dairy%
 https://www.progressivepublish.com/downloads/2017/general/2016-pd-stats-lowres.pdf 
 
 ## Canada-farms-income.csv <br/>
-Heavily pre-processed dataset also containing information on the number of farms and milk cows across canada, total production and profits, and profit breakdowns from 2000 - 2014. In Canada, a “Supply Management” system is in use, which means that there are no government subsidies -- as a result, earned profits are equal to total profits. <br/>
+Heavily pre-processed dataset also containing information on the number of farms and milk cows across canada, total production and profits, and profit breakdowns from 2000 - 2014. In Canada, a “Supply Management” system is in use, which means that there are no government subsidies -- as a result, earned profits are equal to total profits. <br/><br/>
 Amount of production (HL, required conversion to gallons): http://dairyinfo.gc.ca/index_e.php?s1=dff-fcil&s2=msp-lpl&s3=hmp-phl&page=histprod <br/>
 Number of cows: http://aimis-simia-cdic-ccil.agr.gc.ca/rp/index-eng.cfm?action=pR&r=219&pdctc= <br/>
 Farm income data (profits = net operating income): http://www5.statcan.gc.ca/cansim/a26?lang=eng&retrLang=eng&id=0020035&tabMode=dataTable&p1=1&p2=-1&srchLan=-1&pattern=milk <br/>
