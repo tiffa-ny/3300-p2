@@ -1,5 +1,21 @@
 # 3300-p2
 
+## Flow of Project
+### First Visualization: Overview <br/>
+Presenting the average historical price data for Canada and the US, should be able to toggle between the two countries and highlight items (for interactivity). Concerned about # of items displayed -- kind of messy and hard to sort out, also difficult to compare between the two countries. <br/> <br/>
+Datasets used: canada.csv, us.csv
+
+### Second Visualization: Best and Worst to Buy in US <br/>
+Presenting the best and worst items to buy in the United States, based on the most recent month of price data (February 2018). This can be  calculated by taking the percentage difference between the US price and the Canadian price to see how much of an increase the Canadian price is, and then taking the 5 most positive differences as the "best" to buy and 5 most negative differences as the "worst" to buy. I have already computed this in Excel roughly and the most interesting item is milk -- it is about $3.50 in the US and close to $7 in Canada. <br/> <br/>
+Datasets used: canada-2018-prices.csv, us-2018-prices.csv
+
+### Third Visualization: Why milk? <br/>
+Exploring why milk is so expensive in Canada and delving into the profits / production of the two countries. This is the bulk of the visualization and will require the most work, but I have already pre-processed all of the data into two csv files that should be fairly easy to work with. The data is annualized between 2000 and 2014, with information on the number of farms, cows, production quantities, and profit breakdowns by different categories (per farm, per cow, per gallon of milk). It is interesting to explore this data because Canadian profits follow a steady upwards trend while American ones are all over the place. <br/><br/>
+The **most important part of this data is that American milk is subsidized by the government, which leads to higher profit margins. These subsidies actually correspond to profits -- the lower earned profits are, the higher subsidies are. This is interesting because the Canadian government does not subsidize its milk at all. Taken as a whole, Canadian profits are significantly higher than American profits, which makes sense -- the milk is so much more expensive. But American profits swing wildly from year to year, while there are no corresponding price increases in milk. Consumption of milk is not fluctuating wildly, so there is mysteriously no explanation for how milk can stay at this price. We can discuss this in our "further exploration" part of the visualization because I really don't know why this is going on and I've done a lot of research in the past couple of days.** <br/><br/>
+Datasets used: us-farms-income.csv, canada-farms-income.csv, us-consumption.csv
+
+## Data Files Documentation
+
 ## Canada.csv <br/>
 Contains data on average food prices of selected items across Canada from the period January 1996 to February 2018. Prices are adjusted by weight to match US units for ease of comprehension, and converted from CAD to USD using the exchange rates per month from exchange.csv. <br/><br/>
 Canadian prices: http://www5.statcan.gc.ca/cansim/a26?lang=eng&retrLang=eng&id=3260012&tabMode=dataTable&p1=-1&p2=9&srchLan=-1#F1 <br/>
