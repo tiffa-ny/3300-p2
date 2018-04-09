@@ -7,21 +7,30 @@
   <h3> Should you move to Canada? </h3>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="http://d3js.org/queue.v1.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=PT+Sans" />
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans" />
   <link rel='stylesheet' type='text/css' href='css/style.css'>
 </head>
 
 <body>
 
 <div id='part1'> 
-    Hover over to see exact item name.
+    <p>Hover over to see exact item name.</p>
     <figure>
         <figcaption> Click me! </figcaption>
         <img onclick="country(this)" src='images/us.png' id='flag'></img>
     </figure>
-
     <svg width='1000' height='600' id='usPrices'></svg>
     <svg width='1000' height='600' id='canPrices' style='display: none'></svg>
+</div>
+
+<div id='part2'>
+    <p> Winners and losers </p>
+    <svg id='winners-losers'></svg>
+</div>
+
+<div id='part3'>
+    <p> Why is milk so expensive? </p>
+    <svg id='comparing-milk'></svg>
 </div>
 
 <script> 
@@ -76,10 +85,10 @@
         //                 .domain([d3.min(items, function(d) { return d3.min(d.prices, function(p) { return p.Price; }); }) ,d3.max(items, function(d) { return d3.max(d.prices, function(p) { return p.Price; }); })])
         //                 .range([550,50]);
         var yScale1 = d3.scaleLinear()
-                        .domain([0,6.3])
+                        .domain([0,9.3])
                         .range([550,50]);
                 
-        var zScale1 = d3.scaleOrdinal(d3.schemeCategory20)
+        var zScale1 = d3.scaleOrdinal(d3.schemeCategory20b)
                         .domain(items.map(function(items) { return items.items; }));
 
         var line = d3.line()
@@ -212,8 +221,8 @@
             });
     };
 
-    d3.csv("datasets/us-cpi.csv",processing, callback);
-    d3.csv("datasets/canada-cpi.csv",processing,callback);
+    d3.csv("datasets/us.csv",processing, callback);
+    d3.csv("datasets/canada.csv",processing,callback);
 
 </script>
 
