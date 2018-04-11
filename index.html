@@ -42,8 +42,18 @@
 
 
     <p>Finally, we looked to see if we could find a correlation between milk prices and producer profits. We calculated profits in both countries per farm, per cow, and per gallon to see if there were any notable differences in each category.</p>
-    <svg id='comparing-profits-us'></svg>
-    <svg id='comparing-profits-canada'></svg>
+
+    <p class='subheader'> Farms </p>
+    <svg id='comparing-farm-profits-us'></svg>
+    <svg id='comparing-farm-profits-canada'></svg>
+
+    <p class='subheader'> Cows </p>
+    <svg id='comparing-cow-profits-us'></svg>
+    <svg id='comparing-cow-profits-canada'></svg>
+
+    <p class='subheader'> Gallons </p>
+    <svg id='comparing-gallon-profits-us'></svg>
+    <svg id='comparing-gallon-profits-canada'></svg>
 </div>
 
 <script> 
@@ -250,21 +260,41 @@
                         .attr("width",productionWidth)
                         .attr("height",productionHeight);
 
+    var costWidth = 500;
+    var costHeight = 400;
     var usCostGraph = d3.select("#comparing-costs-us")
-                        .attr("width",400)
-                        .attr("height",400);
+                        .attr("width",costWidth)
+                        .attr("height",costHeight);
 
     var canadaCostGraph = d3.select("#comparing-costs-canada")
-                        .attr("width",400)
-                        .attr("height",400);
+                        .attr("width",costWidth)
+                        .attr("height",costHeight);
 
-    var usProfitsGraph = d3.select("#comparing-profits-us")
-                        .attr("width",400)
-                        .attr("height",400);
+    var profitWidth = 500;
+    var profitHeight = 400;
+    var usFarmProfitGraph = d3.select("#comparing-farm-profits-us")
+                        .attr("width",profitWidth)
+                        .attr("height",profitHeight);
 
-    var canadaProfitsGraph = d3.select("#comparing-profits-canada")
-                        .attr("width",400)
-                        .attr("height",400);
+    var canadaFarmProfitGraph = d3.select("#comparing-farm-profits-canada")
+                        .attr("width",profitWidth)
+                        .attr("height",profitHeight);
+
+    var usCowProfitGraph = d3.select("#comparing-cow-profits-us")
+                        .attr("width",profitWidth)
+                        .attr("height",profitHeight);
+
+    var canadaCowProfitGraph = d3.select("#comparing-cow-profits-canada")
+                        .attr("width",profitWidth)
+                        .attr("height",profitHeight);
+
+    var usGallonProfitGraph = d3.select("#comparing-gallon-profits-us")
+                        .attr("width",profitWidth)
+                        .attr("height",profitHeight);
+
+    var canadaGallonProfitGraph = d3.select("#comparing-gallon-profits-canada")
+                        .attr("width",profitWidth)
+                        .attr("height",profitHeight);
 
     function usProductionCallback(err, data) {
         var data = data;
@@ -277,13 +307,17 @@
                 Year: Number(data[i]["Year"]),
                 Price: Number(data[i]["Price"]),
                 TotalProduction: Number(data[i]["Total Production (in gallons)"])/10000,
-                Production: Number(data[i]["Production per Capita"])
+                Production: Number(data[i]["Production per Capita"]),
+                Cost: Number(data[i]['Cost per Farm']),
+                FarmProfit: Number(data[i]["Profits/farm"]),
+                CowProfit: Number(data[i]["Profits/cow"]),
+                GallonProfit: Number(data[i]["Profits/gallon"])
             };
         };
 
         console.log(usProductionArray);
 
-        usProductionxScale = d3.scaleLinear()
+        usXScale = d3.scaleLinear()
                                 .domain([2.5,3.9])
                                 .range([100,productionWidth-30]);
 
@@ -296,14 +330,14 @@
                                 .range([30,productionHeight-50]);
 
         var usProductionLine = d3.area()
-                    .x(d => usProductionxScale(d.Price))
+                    .x(d => usXScale(d.Price))
                     .y(d => usProductionyScale(d.Production));
 
         usProductionGraph.selectAll("circle")
             .data(usProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return usProductionxScale(d.Price); })
+            .attr('cx',function(d) {return usXScale(d.Price); })
             .attr('cy',function(d) {return usProductionyScale(d.Production); })
 
         // usProductionGraph.append("path")
@@ -315,7 +349,7 @@
          //add axes
         usProductionGraph.append('g')
             .attr('transform','translate(0,350)')
-            .call(d3.axisBottom(usProductionxScale));
+            .call(d3.axisBottom(usXScale));
 
         usProductionGraph.append('g')
             .attr('transform','translate(100,0)')
@@ -336,10 +370,159 @@
             .attr('transform', 'translate(220,20)')
             .attr('class','labels')
             .text("Production in US");
+
+        //us cost graph
+        usCostyScale = d3.scaleLinear()
+                            .domain([1100000,200000])
+                            .range([30,costHeight-50]);
+
+        usCostGraph.selectAll("circle")
+            .data(usProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return usXScale(d.Price); })
+            .attr('cy',function(d) {return usCostyScale(d.Cost); })
+
+         //add axes
+        usCostGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(usXScale));
+
+        usCostGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(usCostyScale));
+
+        //add text
+        usCostGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Cost per Farm (USD)");
+
+        usCostGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        usCostGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Cost of Production in US");
+
+        //us profits/farm graph
+        usFarmProfityScale = d3.scaleLinear()
+                            .domain([200000,-100000])
+                            .range([30,costHeight-50]);
+
+        usFarmProfitGraph.selectAll("circle")
+            .data(usProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return usXScale(d.Price); })
+            .attr('cy',function(d) {return usFarmProfityScale(d.FarmProfit); })
+
+         //add axes
+        usFarmProfitGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(usXScale));
+
+        usFarmProfitGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(usFarmProfityScale));
+
+        //add text
+        usFarmProfitGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Profit per Farm (USD)");
+
+        usFarmProfitGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        usFarmProfitGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Profit per Farm in US");
+
+        //us profits/cow graph
+        usCowProfityScale = d3.scaleLinear()
+                            .domain([1300,-500])
+                            .range([30,costHeight-50]);
+
+        usCowProfitGraph.selectAll("circle")
+            .data(usProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return usXScale(d.Price); })
+            .attr('cy',function(d) {return usCowProfityScale(d.CowProfit); })
+
+         //add axes
+        usCowProfitGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(usXScale));
+
+        usCowProfitGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(usCowProfityScale));
+
+        //add text
+        usCowProfitGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Profit per Cow (USD)");
+
+        usCowProfitGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        usCowProfitGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Profit per Cow in US");
+
+        //us profit/gallon graph
+        usGallonProfityScale = d3.scaleLinear()
+                            .domain([0.55,-0.20])
+                            .range([30,costHeight-50]);
+
+        usGallonProfitGraph.selectAll("circle")
+            .data(usProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return usXScale(d.Price); })
+            .attr('cy',function(d) {return usGallonProfityScale(d.GallonProfit); })
+
+         //add axes
+        usGallonProfitGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(usXScale));
+
+        usGallonProfitGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(usGallonProfityScale));
+
+        //add text
+        usGallonProfitGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Profit per Gallon (USD)");
+
+        usGallonProfitGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        usGallonProfitGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Profit per Gallon in US");
     }
 
     function canadaProductionCallback(err, data) {
         var data = data;
+        console.log(data);
 
         //production graph for US
         var canadaProductionArray = [];
@@ -349,12 +532,16 @@
                 Year: Number(data[i]["Year"]),
                 Price: Number(data[i]["Price"]),
                 TotalProduction: Number(data[i]["Total Production (in gallons)"])/10000,
-                Production: Number(data[i]["Production per Capita"])
+                Production: Number(data[i]["Production per Capita"]),
+                Cost: Number(data[i]['Cost per Farm']),
+                FarmProfit: Number(data[i]["Profits/farm"]),
+                CowProfit: Number(data[i]["Profits/cow"]),
+                GallonProfit: Number(data[i]["Profits/gallon"])
             };
         };
         console.log(canadaProductionArray);
 
-        canadaProductionxScale = d3.scaleLinear()
+        canadaXScale = d3.scaleLinear()
                                 .domain([3.5,9.5])
                                 .range([100,productionWidth-30]);
 
@@ -362,9 +549,9 @@
                                 .domain([66,57])
                                 .range([30,productionHeight-50]);
 
-        var canadaProductionLine = d3.area()
-                    .x(d => canadaProductionxScale(d.Price))
-                    .y(d => canadaProductionyScale(d.Production));
+        // var canadaProductionLine = d3.area()
+        //             .x(d => canadaXScale(d.Price))
+        //             .y(d => canadaProductionyScale(d.Production));
 
         // canadaProductionGraph.append("path")
         //     .attr("d",canadaProductionLine(canadaProductionArray))
@@ -376,14 +563,13 @@
             .data(canadaProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return canadaProductionxScale(d.Price); })
+            .attr('cx',function(d) {return canadaXScale(d.Price); })
             .attr('cy',function(d) {return canadaProductionyScale(d.Production); })
-
 
          //add axes
         canadaProductionGraph.append('g')
             .attr('transform','translate(0,350)')
-            .call(d3.axisBottom(canadaProductionxScale));
+            .call(d3.axisBottom(canadaXScale));
 
         canadaProductionGraph.append('g')
             .attr('transform','translate(100,0)')
@@ -404,6 +590,154 @@
             .attr('transform', 'translate(220,20)')
             .attr('class','labels')
             .text("Production in Canada");
+
+        //canada cost graph
+        canadaCostyScale = d3.scaleLinear()
+                            .domain([475000,120000])
+                            .range([30,costHeight-50]);
+
+        canadaCostGraph.selectAll("circle")
+            .data(canadaProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return canadaXScale(d.Price); })
+            .attr('cy',function(d) {return canadaCostyScale(d.Cost); })
+
+         //add axes
+        canadaCostGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(canadaXScale));
+
+        canadaCostGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(canadaCostyScale));
+
+        //add text
+        canadaCostGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Cost per Farm (USD)");
+
+        canadaCostGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        canadaCostGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Cost of Production in Canada");
+
+        //canada profits/farm graph
+        canadaProfitFarmyScale = d3.scaleLinear()
+                            .domain([150000,40000])
+                            .range([30,costHeight-50]);
+
+        canadaFarmProfitGraph.selectAll("circle")
+            .data(canadaProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return canadaXScale(d.Price); })
+            .attr('cy',function(d) {return canadaProfitFarmyScale(d.FarmProfit); })
+
+         //add axes
+        canadaFarmProfitGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(canadaXScale));
+
+        canadaFarmProfitGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(canadaProfitFarmyScale));
+
+        //add text
+        canadaFarmProfitGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Profit per Farm (USD)");
+
+        canadaFarmProfitGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        canadaFarmProfitGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Profit per Farm in Canada");
+
+        //canada profits/cow graph
+        canadaProfitCowyScale = d3.scaleLinear()
+                            .domain([1900,600])
+                            .range([30,costHeight-50]);
+
+        canadaCowProfitGraph.selectAll("circle")
+            .data(canadaProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return canadaXScale(d.Price); })
+            .attr('cy',function(d) {return canadaProfitCowyScale(d.CowProfit); })
+
+         //add axes
+        canadaCowProfitGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(canadaXScale));
+
+        canadaCowProfitGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(canadaProfitCowyScale));
+
+        //add text
+        canadaCowProfitGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Profit per Cow (USD)");
+
+        canadaCowProfitGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        canadaCowProfitGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Profit per Cow in Canada");
+
+        //canada profits/farm graph
+        canadaProfitGallonyScale = d3.scaleLinear()
+                            .domain([0.9,0.35])
+                            .range([30,costHeight-50]);
+
+        canadaGallonProfitGraph.selectAll("circle")
+            .data(canadaProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return canadaXScale(d.Price); })
+            .attr('cy',function(d) {return canadaProfitGallonyScale(d.GallonProfit); })
+
+         //add axes
+        canadaGallonProfitGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(canadaXScale));
+
+        canadaGallonProfitGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(canadaProfitGallonyScale));
+
+        //add text
+        canadaGallonProfitGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Average Profit per Gallon (USD)");
+
+        canadaGallonProfitGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        canadaGallonProfitGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Profit per Gallon in Canada");
     }
 
     d3.csv('datasets/us-farms-income.csv',usProductionCallback);
