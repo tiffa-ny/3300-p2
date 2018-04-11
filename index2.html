@@ -58,7 +58,6 @@
 
     function processing(row, index, columns) {
         row.Date = dateParse(row.Date);
-        console.log(row);
         return row;
     }
 
@@ -142,7 +141,7 @@
 
         }
 
-        else if(items[0].prices[0].Price == 0.1926){
+        else if(items[0].prices[1].Price == 0.1926){
             var isDiff = true;
 
             var DiffPricesGraph = d3.select("#winners-losers");
@@ -272,7 +271,9 @@
                 });
                 textDisplay.style("opacity",1)
                 itemDisplay.style("opacity",0.2)
-                lineDisplay.style("fill", "red");
+                if(isDiff){
+                  lineDisplay.style("fill", "red");
+                };
             })
             .on("mouseout",function(d) {
                 var textDisplay = itemTexts.filter(function(f) {
@@ -285,12 +286,14 @@
                     return f.item == d.item;
                 });
                 textDisplay.style("opacity",0)
-                itemLines.style("opacity",1);
-                lineDisplay.style("fill", "none");
+                itemLines.style("opacity",1)
+                if(isDiff){
+                  lineDisplay.style("fill", "none");
+                };
             });
     };
 
-    d3.csv("datasets/differences.csv",processing, callback);
+    d3.csv("datasets/differences2.csv",processing, callback);
     d3.csv("datasets/us.csv",processing, callback);
     d3.csv("datasets/canada.csv",processing,callback);
 
