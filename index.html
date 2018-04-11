@@ -14,6 +14,7 @@
 <body>
 
 <div id='part1'> 
+    <p class='header'> Average Prices in US vs. Canada </p>
     <p>Hover over to see exact item name.</p>
     <figure>
         <figcaption> Click me! </figcaption>
@@ -24,13 +25,25 @@
 </div>
 
 <div id='part2'>
-    <p> Winners and losers </p>
+    <p class='header'> Winners and losers </p>
     <svg id='winners-losers'></svg>
 </div>
 
 <div id='part3'>
-    <p> Why is milk so expensive? </p>
-    <svg id='comparing-milk'></svg>
+    <p class='header'> Why is milk so expensive? </p>
+
+    <p> For the next part of our project, we set out to explore production of milk in the United States and Canada to try to determine why prices are so different. First, we looked at total production of dairy products in both countries over the years to see if there was a relationship between production per capita and prices.</p>
+    <svg id='comparing-production-us'></svg>
+    <svg id='comparing-production-canada'></svg>
+
+    <p> Next, we looked at operating costs per year to see if higher costs could be resulting in higher prices. </p>
+    <svg id='comparing-costs-us'></svg>
+    <svg id='comparing-costs-canada'></svg>
+
+
+    <p>Finally, we looked to see if we could find a correlation between milk prices and producer profits. We calculated profits in both countries per farm, per cow, and per gallon to see if there were any notable differences in each category.</p>
+    <svg id='comparing-profits-us'></svg>
+    <svg id='comparing-profits-canada'></svg>
 </div>
 
 <script> 
@@ -56,12 +69,12 @@
 
     var dateParse = d3.timeParse("%m/%d/%Y");
 
-    function processing(row, index, columns) {
+    function processing1(row, index, columns) {
         row.Date = dateParse(row.Date);
         return row;
     }
 
-    function callback(err,data) {
+    function callback1(err,data) {
         
         //consulted https://bl.ocks.org/mbostock/3884955
         var items = data.columns.slice(1).map(function(item) {
@@ -221,8 +234,180 @@
             });
     };
 
-    d3.csv("datasets/us.csv",processing, callback);
-    d3.csv("datasets/canada.csv",processing,callback);
+    d3.csv("datasets/us.csv",processing1, callback1);
+    d3.csv("datasets/canada.csv",processing1,callback1);
+
+</script>
+
+<script>
+    var productionWidth = 500;
+    var productionHeight = 400;
+    var usProductionGraph = d3.select("#comparing-production-us")
+                        .attr("width",productionWidth)
+                        .attr("height",productionHeight);
+
+    var canadaProductionGraph = d3.select("#comparing-production-canada")
+                        .attr("width",productionWidth)
+                        .attr("height",productionHeight);
+
+    var usCostGraph = d3.select("#comparing-costs-us")
+                        .attr("width",400)
+                        .attr("height",400);
+
+    var canadaCostGraph = d3.select("#comparing-costs-canada")
+                        .attr("width",400)
+                        .attr("height",400);
+
+    var usProfitsGraph = d3.select("#comparing-profits-us")
+                        .attr("width",400)
+                        .attr("height",400);
+
+    var canadaProfitsGraph = d3.select("#comparing-profits-canada")
+                        .attr("width",400)
+                        .attr("height",400);
+
+    function usProductionCallback(err, data) {
+        var data = data;
+
+        //production graph for US
+        var usProductionArray = [];
+        for (i=0;i<data.length;i++) {
+            //production unit is in tens of thousands of gallons
+            usProductionArray[i] = {
+                Year: Number(data[i]["Year"]),
+                Price: Number(data[i]["Price"]),
+                TotalProduction: Number(data[i]["Total Production (in gallons)"])/10000,
+                Production: Number(data[i]["Production per Capita"])
+            };
+        };
+
+        console.log(usProductionArray);
+
+        usProductionxScale = d3.scaleLinear()
+                                .domain([2.5,3.9])
+                                .range([100,productionWidth-30]);
+
+        // usProductionyScale = d3.scaleLinear()
+        //                         .domain([2600000,1980000])
+        //                         .range([30,productionHeight-50]);
+
+        usProductionyScale = d3.scaleLinear()
+                                .domain([80,69])
+                                .range([30,productionHeight-50]);
+
+        var usProductionLine = d3.area()
+                    .x(d => usProductionxScale(d.Price))
+                    .y(d => usProductionyScale(d.Production));
+
+        usProductionGraph.selectAll("circle")
+            .data(usProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return usProductionxScale(d.Price); })
+            .attr('cy',function(d) {return usProductionyScale(d.Production); })
+
+        // usProductionGraph.append("path")
+        //     .attr("d",usProductionLine(usProductionArray))
+        //     .style("stroke","black")
+        //     .style('stroke-width',1.5)
+        //     .style("fill","none");
+
+         //add axes
+        usProductionGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(usProductionxScale));
+
+        usProductionGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(usProductionyScale));
+
+        //add text
+        usProductionGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Production per Capita (gallons)");
+
+        usProductionGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        usProductionGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Production in US");
+    }
+
+    function canadaProductionCallback(err, data) {
+        var data = data;
+
+        //production graph for US
+        var canadaProductionArray = [];
+        for (i=0;i<data.length;i++) {
+            //production unit is in tens of thousands of gallons
+            canadaProductionArray[i] = {
+                Year: Number(data[i]["Year"]),
+                Price: Number(data[i]["Price"]),
+                TotalProduction: Number(data[i]["Total Production (in gallons)"])/10000,
+                Production: Number(data[i]["Production per Capita"])
+            };
+        };
+        console.log(canadaProductionArray);
+
+        canadaProductionxScale = d3.scaleLinear()
+                                .domain([3.5,9.5])
+                                .range([100,productionWidth-30]);
+
+        canadaProductionyScale = d3.scaleLinear()
+                                .domain([66,57])
+                                .range([30,productionHeight-50]);
+
+        var canadaProductionLine = d3.area()
+                    .x(d => canadaProductionxScale(d.Price))
+                    .y(d => canadaProductionyScale(d.Production));
+
+        // canadaProductionGraph.append("path")
+        //     .attr("d",canadaProductionLine(canadaProductionArray))
+        //     .style("stroke","black")
+        //     .style('stroke-width',1.5)
+        //     .style("fill","none");
+
+        canadaProductionGraph.selectAll("circle")
+            .data(canadaProductionArray)
+            .enter().append("circle")
+            .attr('r',3)
+            .attr('cx',function(d) {return canadaProductionxScale(d.Price); })
+            .attr('cy',function(d) {return canadaProductionyScale(d.Production); })
+
+
+         //add axes
+        canadaProductionGraph.append('g')
+            .attr('transform','translate(0,350)')
+            .call(d3.axisBottom(canadaProductionxScale));
+
+        canadaProductionGraph.append('g')
+            .attr('transform','translate(100,0)')
+            .call(d3.axisLeft(canadaProductionyScale));
+
+        //add text
+        canadaProductionGraph.append('text')
+            .attr('transform','rotate(270) translate(-300,20)')
+            .attr('class','labels')
+            .text("Production per Capita (gallons)");
+
+        canadaProductionGraph.append('text')
+            .attr('transform','translate(250,390)')
+            .attr('class','labels')
+            .text("Price (USD)");
+
+        canadaProductionGraph.append('text')
+            .attr('transform', 'translate(220,20)')
+            .attr('class','labels')
+            .text("Production in Canada");
+    }
+
+    d3.csv('datasets/us-farms-income.csv',usProductionCallback);
+    d3.csv('datasets/canada-farms-income.csv',canadaProductionCallback);
 
 </script>
 
