@@ -4,7 +4,6 @@
 <head>
   <meta charset="utf-8">
   <title> INFO3300 Project 2 </title>
-  <h3> Should you move to Canada? </h3>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="http://d3js.org/queue.v1.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans" />
@@ -13,8 +12,10 @@
 
 <body>
 
+<p id='title'> Should you move to Canada? </p>
+
 <div id='part1'> 
-    <p class='header'> Average Prices in US vs. Canada </p>
+    <p class='header'>Prices Here and There</p>
     <p>Hover over to see exact item name.</p>
     <figure>
         <figcaption> Click me! </figcaption>
@@ -23,16 +24,58 @@
     <svg width='1000' height='600' id='usPrices'></svg>
     <svg width='1000' height='600' id='canPrices' style='display: none'></svg>
 </div>
+<hr>
 
 <div id='part2'>
-    <p class='header'> Winners and losers </p>
+    <p class='header'> How Much More Expensive is Canada, Really? </p>
     <svg id='winners-losers'></svg>
 </div>
+<hr>
 
 <div id='part3'>
-    <p class='header'> Why is milk so expensive? </p>
+    <p class='header'> Got Milk? </p>
 
-    <p> For the next part of our project, we set out to explore production of milk in the United States and Canada to try to determine why prices are so different. First, we looked at total production of dairy products in both countries over the years to see if there was a relationship between production per capita and prices.</p>
+    <p class='section'> <span class='bold'> Part 1: </span> Looking at Profit </p>
+
+    <p class='toggleLabel1'>Year</p>
+    <p class='toggleLabel2'>Price</p>
+    <label class="toggleContainer">
+        <input type="checkbox" id='profitToggle' class = 'generalToggle'onchange='toggleProfit()'>
+        <span class="toggle round"></span>
+    </label>
+
+    <svg id='comparing-profits'></svg>
+
+    <p class='section'> <span class='bold'> Part 2: </span> Counting Costs </p>
+
+    <p class='toggleLabel1'>Year</p>
+    <p class='toggleLabel2'>Price</p>
+    <label class="toggleContainer">
+        <input type="checkbox" id='costToggle' class='generalToggle' onchange='toggleCost()'>
+        <span class="toggle round"></span>
+    </label>
+
+    <div id='comparing-costs'>
+        <svg id='us-comparing-costs'></svg>
+        <svg id='canada-comparing-costs'></svg>
+    </div>
+
+    <p class='section'> <span class='bold'> Part 3: </span> Examining Production </p>
+
+    <p class='toggleLabel1'>Year</p>
+    <p class='toggleLabel2'>Price</p>
+    <label class="toggleContainer">
+        <input type="checkbox" id='productionToggle' class = 'generalToggle'onchange='toggleProduction()'>
+        <span class="toggle round"></span>
+    </label>
+
+    <svg id='comparing-production'></svg>
+
+    <p class='section'> <span class='bold'> Bonus: </span> Less Overall Production, More Production per Farm!  </p>
+
+    <svg id='bonus'></svg>
+
+    <!-- <p> For the next part of our project, we set out to explore production of milk in the United States and Canada to try to determine why prices are so different. First, we looked at total production of dairy products in both countries over the years to see if there was a relationship between production per capita and prices.</p>
     <svg id='comparing-production-us'></svg>
     <svg id='comparing-production-canada'></svg>
 
@@ -54,7 +97,7 @@
     <p class='subheader'> Gallons </p>
     <svg id='comparing-gallon-profits-us'></svg>
     <svg id='comparing-gallon-profits-canada'></svg>
-</div>
+</div> -->
 
 <script> 
 
@@ -250,6 +293,846 @@
 </script>
 
 <script>
+    //function to toggle profit graph between price and time
+    function toggleProfit() {
+        if (document.getElementById('profitToggle').checked) {
+            d3.selectAll('.profitTime')
+              .transition()
+              .duration(100000)
+              .style('visibility','hidden');
+            d3.selectAll('.profitPrice')
+                .transition()
+              .duration(1000)
+                .style('visibility','visible');
+        } else {
+            d3.selectAll('.profitTime')
+                .transition()
+              .duration(1000)
+              .style('visibility','visible');
+            d3.selectAll('.profitPrice')
+                .transition()
+              .duration(1000)
+                .style('visibility','hidden');
+        };
+        };
+
+    function toggleCost() {
+        if (document.getElementById('costToggle').checked) {
+            d3.selectAll('.costTime')
+              .transition()
+              .duration(100000)
+              .style('visibility','hidden');
+            d3.selectAll('.costPrice')
+            .transition()
+              .duration(1000)
+                .style('visibility','visible');
+        } else {
+            d3.selectAll('.costTime')
+              .transition()
+              .duration(1000)
+              .style('visibility','visible');
+            d3.selectAll('.costPrice')
+              .transition()
+              .duration(1000)
+              .style('visibility','hidden');
+        };
+    };
+
+    function toggleProduction() {
+        if (document.getElementById('productionToggle').checked) {
+            d3.selectAll('.productionTime')
+              .transition()
+              .duration(100000)
+              .style('visibility','hidden');
+            d3.selectAll('.productionPrice')
+            .transition()
+              .duration(1000)
+                .style('visibility','visible');
+        } else {
+            d3.selectAll('.productionTime')
+              .transition()
+              .duration(1000)
+              .style('visibility','visible');
+            d3.selectAll('.productionPrice')
+              .transition()
+              .duration(1000)
+              .style('visibility','hidden');
+        };
+    };
+
+    var profitGraph = d3.select("#comparing-profits")
+                        .attr("width",1000)
+                        .attr("height",500);
+
+    var usCostGraph = d3.select('#us-comparing-costs')
+                    .attr('width',600)
+                    .attr('height',500);
+
+    var canadaCostGraph = d3.select('#canada-comparing-costs')
+                    .attr('width',600)
+                    .attr('height',500);
+
+    var productionGraph = d3.select("#comparing-production")
+                            .attr('width',1000)
+                            .attr('height',550);
+
+    var queue = d3.queue()
+                    .defer(d3.csv, 'datasets/us-farms-income.csv')
+                    .defer(d3.csv, 'datasets/canada-farms-income.csv');
+    
+    queue.awaitAll(function(error, data) {
+        
+        if (error) throw error;
+        
+        var usData = data[0];
+        var canadaData = data[1];
+
+        var usArray = [];
+        var canadaArray = [];
+
+        for (i=0;i<canadaData.length;i++) {
+            usArray[i] = {
+                Year: Number(usData[i]["Year"]),
+                Price: Number(usData[i]["Price"]),
+                CapitaProduction: Number(usData[i]["Production per capita"]),
+                FarmProduction: Number(usData[i]['Production per farm']),
+                FarmNumber: Number(usData[i]['Number of Farms']),
+                Revenue: Number(usData[i]['Revenue per gallon']),
+                Cost: Number(usData[i]['Cost per gallon']),
+                Profit: Number(usData[i]['Earned profits/gallon'])
+            };
+        };
+
+        for (j=0;j<canadaData.length;j++) {
+            canadaArray[j] = {
+                Year: Number(canadaData[j]["Year"]),
+                Price: Number(canadaData[j]["Price"]),
+                CapitaProduction: Number(canadaData[j]["Production per capita"]),
+                FarmProduction: Number(canadaData[j]['Production per farm']),
+                FarmNumber: Number(canadaData[j]['Number of Farms']),
+                Revenue: Number(canadaData[j]['Revenue per gallon']),
+                Cost: Number(canadaData[j]['Cost per gallon']),
+                Profit: Number(canadaData[j]["Profits/gallon"])
+            };
+        };
+        console.log(usArray);
+        console.log(canadaArray);
+
+        //PROFIT GRAPHS -- YEAR AND PRICE /////////////////////////
+        var profitTimeXScale = d3.scaleLinear()
+                        .domain([2000,2014])
+                        .range([50,940]);
+        var profitYScale = d3.scaleLinear()
+                        .domain([0.9, -0.2])
+                        .range([10,450]);
+
+        var usProfitLine = d3.area()
+                    .x(d => profitTimeXScale(d.Year))
+                    .y(d => profitYScale(d.Profit));
+
+        profitGraph.append("path")
+            .attr("d",usProfitLine(usArray))
+            .attr('id','usTimePath')
+            .attr('class','profitTime')
+            .style("stroke","blue");
+
+        profitGraph.append("path")
+            .attr("d",usProfitLine(canadaArray))
+            .attr('id','canadaTimePath')
+            .attr('class','profitTime')
+            .style("stroke","red");
+
+        //adding elements to highlight negative profit
+        profitGraph.append('line')
+                    // .attr('class','profitTime')
+                    .attr('x1',50)
+                    .attr('x2',940)
+                    .attr('y1',370)
+                    .attr('y2',370)
+                    .style('stroke','lightgrey');
+
+        profitGraph.append('rect')
+                    .attr('id','negativeProfit')
+                    // .attr('class','profitTime')
+                    .attr('x',50)
+                    .attr('y',370)
+                    .attr('height',80)
+                    .attr('width',890)
+                    .style('fill','grey')
+                    .style('opacity',0.2)
+
+        profitGraph.append('text')
+                    // .attr('class','profitTime')
+                    .attr('id','negativeProfitLabel')
+                    .attr('x',100)
+                    .attr('y',415)
+                    .text('Negative Profits!');
+
+        profitGraph.append("g")
+            .attr("class", "usTimeCircles profitTime")
+            .selectAll("circle")
+            .data(usArray)
+            .enter().append("circle")
+            .attr('opacity',0.5)
+            .attr("r", 5)
+            .attr("cx", function(d) {return profitTimeXScale(d.Year); })
+            .attr("cy", function(d) {return profitYScale(d.Profit); })
+            .on("mouseover",function(d){
+                d3.select(this)
+                    .attr('r',10)
+                    .attr('opacity',1);
+                profitGraph.append("text")
+                            .attr('x',function() {return profitTimeXScale(d.Year)+15; })
+                            .attr('y',function() {return profitYScale(d.Profit)+5; })
+                            .attr('id','a'+d.Year)
+                            .text(function() { return "$"+d.Profit.toFixed(2); });
+                profitGraph.select('#canadaTimePath')
+                           .style('stroke-opacity',0.2);
+            })
+            .on("mouseout",function(d) {
+                d3.select(this)
+                    .attr('r',5)
+                    .attr('opacity',0.5);
+                d3.select("#a"+d.Year).remove();
+                profitGraph.select('#canadaTimePath')
+                           .style('stroke-opacity',1);
+            });
+
+        profitGraph.append("g")
+            .attr("class", "canadaTimeCircles profitTime")
+            .selectAll("circle")
+            .data(canadaArray)
+            .enter().append("circle")
+            .attr('r', 5)
+            .attr('opacity',0.5)
+            .attr("cx", function(d) {return profitTimeXScale(d.Year); })
+            .attr("cy", function(d) {return profitYScale(d.Profit); })
+            .on("mouseover",function(d){
+                d3.select(this)
+                    .attr('r',10)
+                    .attr('opacity',1);
+                profitGraph.append("text")
+                            .attr('x',function() {return profitTimeXScale(d.Year)-50; })
+                            .attr('y',function() {return profitYScale(d.Profit)-15; })
+                            .attr('id','a'+d.Year)
+                            .text(function() { return "$"+d.Profit.toFixed(2); });
+                profitGraph.select('#canadaTimePath')
+                           .style('stroke-opacity',1);
+                // profitGraph.select('.usCircles')
+                //            .style('opacity',0.2);
+            })
+            .on("mouseout",function(d) {
+                d3.select(this)
+                    .attr('r',5)
+                    .attr('opacity',0.5);
+                d3.select("#a"+d.Year).remove();
+                profitGraph.select('#canadaTimePath')
+                           .style('stroke-opacity',0.3)
+                profitGraph.select('.usTimeCircles')
+                           .style('opacity',1);
+            });
+
+        //add axes
+        profitGraph.append('g')
+                   .attr('transform','translate(0,450)')
+                   .attr('class','profitTime')
+                   .call(d3.axisBottom(profitTimeXScale).tickFormat(d3.format("d")));
+
+        profitGraph.append('g')
+                   .attr('transform','translate(50,0)')
+                   .call(d3.axisLeft(profitYScale).tickFormat(d=>'$'+d));
+
+        //add text
+        profitGraph.append('text')
+            .attr('transform','rotate(270) translate(-290,12)')
+            .attr('class','labels')
+            .text("Profit per gallon");
+
+        // profitGraph.append('text')
+        //     .attr('class','labels profitTime')
+        //     .attr('transform','translate(480,490)')
+        //     .text("Year");
+
+        //add data for price graph
+        var profitPriceXScale = d3.scaleLinear()
+                            .domain([2.5,9.5])
+                            .range([50,940]);
+
+        profitGraph.append('g')
+            .attr('class','usPriceCircles profitPrice')
+            .selectAll("circle")
+            .data(usArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return profitPriceXScale(d.Price); })
+            .attr('cy',function(d) {return profitYScale(d.Profit); })
+            .on("mouseover",function(d) {
+                d3.select('.canadaPriceCircles')
+                    .style('opacity',0.2);
+
+                profitGraph.append("text")
+                            .attr('x',function() { return profitPriceXScale(d.Price)+10; })
+                            .attr('y',function() {return profitYScale(d.Profit)+5; })
+                            .attr('id','i'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.canadaPriceCircles')
+                    .style('opacity',1);
+                d3.select("#i"+d.Year).remove();
+            });
+
+
+        profitGraph.append('g')
+            .attr('class','canadaPriceCircles profitPrice')
+            .selectAll("circle")
+            .data(canadaArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return profitPriceXScale(d.Price); })
+            .attr('cy',function(d) {return profitYScale(d.Profit); })
+            .on("mouseover",function(d) {
+                d3.select('.usPriceCircles')
+                    .style('opacity',0.2);
+
+                profitGraph.append("text")
+                            .attr('x',function() { return profitPriceXScale(d.Price); })
+                            .attr('y',function() {return profitYScale(d.Profit)-10; })
+                            .attr('id','i'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.usPriceCircles')
+                    .style('opacity',1);
+                d3.select("#i"+d.Year).remove();
+            });
+
+        //add axes, consulted https://stackoverflow.com/questions/18474620/d3-js-tickformat-adding-a-sign-without-multiplying-by-100 for format
+        profitGraph.append('g')
+                   .attr('transform','translate(0,450)')
+                   .attr('class','profitPrice')
+                   .call(d3.axisBottom(profitPriceXScale).tickFormat(d => '$'+d));
+
+        profitGraph.append('text')
+            .attr('class','labels profitPrice')
+            .attr('transform','translate(480,490)')
+            .text("Price per gallon");
+
+        //COST GRAPHS -- YEAR AND PRICE /////////////////////////
+        var usCostTimeXScale = d3.scaleLinear()
+                            .domain([2000,2014])
+                            .range([50,580])
+
+        var revenueYScale = d3.scaleLinear()
+                        // .domain([2.3,0])
+                        .domain([3.8,0])
+                        .range([10,450]);
+
+        var usCostArea = d3.area() 
+                        .x(d => usCostTimeXScale(d.Year))
+                        .y0(450)
+                        .y1(d => revenueYScale(d.Cost));
+
+        var usCostLine = d3.line() 
+                        .x(d => usCostTimeXScale(d.Year))
+                        .y(d => revenueYScale(d.Cost));
+
+        var usRevenueArea = d3.area()
+                            .x(d => usCostTimeXScale(d.Year))
+                            .y0(450)
+                            .y1(d => revenueYScale(d.Revenue));
+
+        var usRevenueLine = d3.line() 
+                        .x(d => usCostTimeXScale(d.Year))
+                        .y(d => revenueYScale(d.Revenue));
+
+        // //add gridlines
+        // usCostGraph.append("g")         
+        //     .attr("class","hLines")
+        //     .attr("transform","translate(50,0)")
+        //     .call(d3.axisRight(revenueYScale)
+        //         .tickSize(530)
+        //         .tickFormat("")
+        //     );
+
+        // canadaCostGraph.append("g")         
+        //     .attr("class","hLines")
+        //     .attr("transform","translate(50,0)")
+        //     .call(d3.axisRight(revenueYScale)
+        //         .tickSize(530)
+        //         .tickFormat("")
+        //     );
+
+        //adapted from https://bl.ocks.org/mbostock/3902569
+        var usHover = usCostGraph.append("g")
+                      .attr("class", "costHover")
+                      .style("visibility", "hidden")
+                      .append("text")
+                      .attr("x", -10)
+                      .attr("y", 30);
+
+        var canHover = canadaCostGraph.append("g")
+                      .attr("class", "costHover")
+                      .style("visibility", "hidden")
+                      .append("text")
+                      .attr("x", -10)
+                      .attr("y", 30);
+
+
+        function usTrackCost() {
+            var coord = d3.mouse(this);
+            console.log(revenueYScale.invert(d3.mouse(this)[1]));
+            var ycoord = revenueYScale.invert(d3.mouse(this)[1]);
+            usHover.attr("transform", "translate(" + coord[0] + "," + coord[1] + ")");
+            usHover.text('$'+ycoord.toFixed(2));
+        };
+
+        function canTrackCost() {
+            var coord = d3.mouse(this);
+            console.log(revenueYScale.invert(d3.mouse(this)[1]));
+            var ycoord = revenueYScale.invert(d3.mouse(this)[1]);
+            canHover.attr("transform", "translate(" + coord[0] + "," + coord[1] + ")");
+            canHover.text('$'+ycoord.toFixed(2));
+        };
+
+        usCostGraph.append("path")
+                .attr("d",usRevenueArea(usArray))
+                .attr('id','usRevenueArea')
+                .attr('class','costTime');
+
+        usCostGraph.append("path")
+                .attr("d",usCostArea(usArray))
+                .attr('id','usCostArea')
+                .attr('class','costTime');
+
+        usCostGraph.append("path")
+                .attr("d",usRevenueLine(usArray))
+                .attr('id','usRevenuePath')
+                .attr('class','costTime')
+                .on("mouseover", function() { 
+                    usHover.style("visibility", "visible");
+                    d3.select('#usCostArea')
+                      .style('opacity',0.2);
+                    d3.select("#usCostPath")
+                        .style('opacity',0.2);
+                })
+                .on("mouseout", function() { 
+                    usHover.style("visibility", "hidden");
+                    d3.select('#usCostArea')
+                      .style('opacity',0.4); 
+                    d3.select("#usCostPath")
+                        .style('opacity',1);
+                })
+                .on("mousemove", usTrackCost);
+
+        usCostGraph.append("path")
+                .attr("d",usCostLine(usArray))
+                .attr('id','usCostPath')
+                .attr('class','costTime')
+                .on("mouseover", function() { 
+                    usHover.style("visibility", "visible"); 
+                    d3.select('#usRevenueArea')
+                      .style('opacity',0.2);
+                    d3.select("#usRevenuePath")
+                        .style('opacity',0.2);
+                })
+                .on("mouseout", function() { 
+                    usHover.style("visibility", "hidden"); 
+                    d3.select('#usRevenueArea')
+                      .style('opacity',0.4); 
+                    d3.select("#usRevenuePath")
+                        .style('opacity',1);
+                })
+                .on("mousemove", usTrackCost);
+
+        usCostGraph.append('g')
+                    .attr('transform','translate(0,450)')
+                    .attr('class','costTime axisGrey')
+                    .call(d3.axisBottom(usCostTimeXScale).tickFormat(d3.format('d')));
+
+        // usCostGraph.append('g')
+        //             .attr('transform','translate(50,0)')
+        //             .attr('class','axisGrey')
+        //             .call(d3.axisLeft(revenueYScale).tickFormat(d=> '$'+d));
+
+        usCostGraph.append('g')
+                    .attr('transform','translate(580,0)')
+                    .attr('class','axisHidden')
+                    .call(d3.axisRight(revenueYScale).tickFormat(d=>'$'+d));
+
+        usCostGraph.append('text')
+                    .attr('transform','rotate(270) translate(-290,15)')
+                    .attr('class', 'labels costTime')
+                    .text('Value per Gallon');
+
+        usCostGraph.append('text')
+                    .attr('transform','translate(270,15)')
+                    .attr('class','labels')
+                    .text('United States')
+                    .style('font-weight','800');
+
+        canadaCostGraph.append("path")
+            .attr("d",usRevenueArea(canadaArray))
+            .attr('id','canadaRevenueArea')
+            .attr('class','costTime')
+          //   .on("mouseover", function() { focus.style("visibility", "visible"); })
+          // .on("mouseout", function() { focus.style("visibility", "hidden"); })
+          // .on("mousemove", trackCost);
+
+        canadaCostGraph.append("path")
+            .attr("d",usCostArea(canadaArray))
+            .attr('id','canadaCostArea')
+            .attr('class','costTime')
+
+        canadaCostGraph.append("path")
+            .attr("d",usRevenueLine(canadaArray))
+            .attr('id','canadaRevenuePath')
+            .attr('class','costTime')
+            .on("mouseover", function() { 
+                canHover.style("visibility", "visible"); 
+                d3.select('#canadaCostArea')
+                      .style('opacity',0.2);
+                d3.select("#canadaCostPath")
+                    .style('opacity',0.2);
+            })
+            .on("mouseout", function() { 
+                canHover.style("visibility", "hidden"); 
+                d3.select('#canadaCostArea')
+                      .style('opacity',0.4);
+                d3.select("#canadaCostPath")
+                    .style('opacity',1);
+            })
+            .on("mousemove", canTrackCost);
+
+        canadaCostGraph.append("path")
+            .attr("d",usCostLine(canadaArray))
+            .attr('id','canadaCostPath')
+            .attr('class','costTime')
+            .on("mouseover", function() { 
+                canHover.style("visibility", "visible"); 
+                d3.select('#canadaRevenueArea')
+                      .style('opacity',0.2);
+                d3.select("#canadaRevenuePath")
+                    .style('opacity',0.2);
+            })
+            .on("mouseout", function() { 
+                canHover.style("visibility", "hidden"); 
+                d3.select('#canadaRevenueArea')
+                      .style('opacity',0.4); 
+                d3.select("#canadaCostPath")
+                .style('opacity',1);
+            })
+            .on("mousemove", canTrackCost);
+
+        //dividing line
+        // canadaCostGraph.append('line')
+        //     .attr('x1',15)
+        //     .attr('x2',15)
+        //     .attr('y1',0)
+        //     .attr('y2',500)
+        //     .style('stroke','lightgrey');
+
+        canadaCostGraph.append('g')
+                    .attr('transform','translate(0,450)')
+                    .attr('class','costTime axisGrey')
+                    .call(d3.axisBottom(usCostTimeXScale).tickFormat(d3.format('d')));
+
+        canadaCostGraph.append('g')
+                    .attr('transform','translate(50,0)')
+                    .attr('class','axisHidden')
+                    .call(d3.axisLeft(revenueYScale));
+
+        canadaCostGraph.append('g')
+                    .attr('transform','translate(30,0)')
+                    .attr('class','axisCenter')
+                    .call(d3.axisLeft(revenueYScale).tickFormat(d=>'$'+d));
+
+        canadaCostGraph.append('text')
+                        .attr('transform','translate(300,15)')
+                        .attr('class','labels')
+                        .text('Canada')
+                        .style('font-weight','800');
+
+        usCostPriceXScale = d3.scaleLinear()
+                                .domain([2.5,3.9])
+                                .range([50,580]);
+
+         canadaCostPriceXScale = d3.scaleLinear()
+                                .domain([3.5,9.5])
+                                .range([50,580]);
+
+        usCostGraph.append('g')
+            .attr('class','usCostCircles costPrice')
+            .selectAll("circle")
+            .data(usArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return usCostPriceXScale(d.Price); })
+            .attr('cy',function(d) {return revenueYScale(d.Cost); })
+            .on("mouseover",function(d) {
+                d3.select('.usRevenueCircles')
+                    .style('opacity',0.2);
+
+                usCostGraph.append("text")
+                            .attr('x',function() { return usCostPriceXScale(d.Price); })
+                            .attr('y',function() {return revenueYScale(d.Cost)-10; })
+                            .attr('id','e'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.usRevenueCircles')
+                    .style('opacity',1);
+                d3.select("#e"+d.Year).remove();
+            });
+
+        usCostGraph.append('g')
+            .attr('class','usRevenueCircles costPrice')
+            .selectAll("circle")
+            .data(usArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return usCostPriceXScale(d.Price); })
+            .attr('cy',function(d) {return revenueYScale(d.Revenue); })
+            .on("mouseover",function(d) {
+                d3.select('.usCostCircles')
+                    .style('opacity',0.2);
+
+                usCostGraph.append("text")
+                            .attr('x',function() { return usCostPriceXScale(d.Price); })
+                            .attr('y',function() {return revenueYScale(d.Revenue)-10; })
+                            .attr('id','b'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.usCostCircles')
+                    .style('opacity',1);
+                d3.select("#b"+d.Year).remove();
+            })
+
+        canadaCostGraph.append('g')
+            .attr('class','canadaCostCircles costPrice')
+            .selectAll("circle")
+            .data(canadaArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return canadaCostPriceXScale(d.Price); })
+            .attr('cy',function(d) {return revenueYScale(d.Cost); })
+            .on("mouseover",function(d) {
+                d3.select('.canadaRevenueCircles')
+                    .style('opacity',0.2);
+
+                canadaCostGraph.append("text")
+                            .attr('x',function() { return canadaCostPriceXScale(d.Price)-25; })
+                            .attr('y',function() {return revenueYScale(d.Cost)-10; })
+                            .attr('id','c'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.canadaRevenueCircles')
+                    .style('opacity',1);
+                d3.select("#c"+d.Year).remove();
+            })
+        
+        canadaCostGraph.append('g')
+            .attr('class','canadaRevenueCircles costPrice')
+            .selectAll("circle")
+            .data(canadaArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return canadaCostPriceXScale(d.Price); })
+            .attr('cy',function(d) {return revenueYScale(d.Revenue); })
+            .on("mouseover",function(d) {
+                d3.select('.canadaCostCircles')
+                    .style('opacity',0.2);
+
+                canadaCostGraph.append("text")
+                            .attr('x',function() { return canadaCostPriceXScale(d.Price)-25; })
+                            .attr('y',function() {return revenueYScale(d.Revenue)-10; })
+                            .attr('id','d'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.canadaCostCircles')
+                    .style('opacity',1);
+                d3.select("#d"+d.Year).remove();
+            })
+
+        usCostGraph.append('g')
+                    .attr('transform','translate(0,450)')
+                    .attr('class','costPrice axisGrey')
+                    .call(d3.axisBottom(usCostPriceXScale).tickFormat(d => "$"+d));
+
+        usCostGraph.append('text')
+                    .attr('transform','translate(565,490)')
+                    .attr('class','costPrice')
+                    .text('Price')
+
+        usCostGraph.append('text')
+                    .attr('transform','rotate(270) translate(-290,15)')
+                    .attr('class', 'labels costPrice')
+                    .text('Cost per Gallon');
+
+        canadaCostGraph.append('text')
+                    .attr('transform','translate(0,490)')
+                    .attr('class','costPrice')
+                    .text('per Gallon')
+
+        canadaCostGraph.append('g')
+            .attr('transform','translate(0,450)')
+            .attr('class','costPrice axisGrey')
+            .call(d3.axisBottom(canadaCostPriceXScale).tickFormat(d => "$"+d));
+
+        /* PRODUCTION GRAPHS *****************************************/
+
+        var productionTimeXScale = d3.scaleLinear()
+                                    .domain([1999.4,2014.5])
+                                    .range([50,940]);
+        var productionYScale = d3.scaleLinear()
+                                .domain([57,79])
+                                .range([500,10]);
+        var usProductionColorScale = d3.scaleLinear()
+                                     .domain([2.5,3.9])
+                                     .range(['lightblue','blue']);
+        var canadaProductionColorScale = d3.scaleLinear()
+                                     .domain([3.5,9.5])
+                                     .range(['pink','red']);
+
+        productionGraph.append('g')
+            .attr('class','usProductionBars productionTime')
+            .selectAll("rect")
+            .data(usArray)
+            .enter().append("rect")
+            .attr('x', function(d){ return productionTimeXScale(d.Year)-10; })
+            .attr('y',function(d) {return productionYScale(d.CapitaProduction); })
+            .attr('width',20)
+            .attr('height',function(d) { return 500 - productionYScale(d.CapitaProduction);})
+            .attr('fill',function(d) { return usProductionColorScale(d.Price); })
+            .on("mouseover",function(d) {
+                d3.select('.canadaProductionBars')
+                    .style('opacity',0.25);
+
+                productionGraph.append("text")
+                            .attr('x',function() { return productionTimeXScale(d.Year)-30; })
+                            .attr('y',function() {return productionYScale(d.CapitaProduction)-10; })
+                            .attr('id','f'+d.Year)
+                            .text(function() { return d.CapitaProduction.toFixed(2)+" gal."; });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.canadaProductionBars')
+                    .style('opacity',1);
+                d3.select("#f"+d.Year).remove();
+            });
+
+         productionGraph.append('g')
+            .attr('class','canadaProductionBars productionTime')
+            .selectAll("rect")
+            .data(canadaArray)
+            .enter().append("rect")
+            .attr('x', function(d){ return productionTimeXScale(d.Year)-10; })
+            .attr('y',function(d) {return productionYScale(d.CapitaProduction); })
+            .attr('width',20)
+            .attr('height',function(d) { return 500 - productionYScale(d.CapitaProduction);})
+            .attr('fill',function(d) { return canadaProductionColorScale(d.Price); })
+            .on("mouseover",function(d) {
+                d3.select('.usProductionBars')
+                    .style('opacity',0.25);
+
+                productionGraph.append("text")
+                            .attr('x',function() { return productionTimeXScale(d.Year)-30; })
+                            .attr('y',function() {return productionYScale(d.CapitaProduction)-10; })
+                            .attr('id','g'+d.Year)
+                            .text(function() { return d.CapitaProduction.toFixed(2)+" gal."; });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.usProductionBars')
+                    .style('opacity',1);
+                d3.select("#g"+d.Year).remove();
+            });
+
+        //add axes
+        productionGraph.append('g')
+                   .attr('transform','translate(50,0)')
+                   .call(d3.axisLeft(productionYScale));
+
+        //add text
+        productionGraph.append('text')
+            .attr('transform','rotate(270) translate(-290,15)')
+            .attr('class','labels')
+            .text("Production per capita");
+
+        productionGraph.append('g')
+                   .attr('transform','translate(0,500)')
+                   .attr('class','productionTime')
+                   .call(d3.axisBottom(productionTimeXScale).tickFormat(d3.format('d')));
+
+        productionGraph.append('text')
+            .attr('class','labels productionPrice')
+            .attr('transform','translate(480,540)')
+            .text("Price per gallon");
+
+        var productionPriceXScale = d3.scaleLinear()
+                                    .domain([2.5,9.5])
+                                    .range([50,940]);
+
+        productionGraph.append('g')
+                        .attr('class','productionPrice')
+                        .attr('transform','translate(0,500)')
+                        .call(d3.axisBottom(productionPriceXScale).tickFormat(d=> '$'+d));
+
+        productionGraph.append('g')
+            .attr('class','usProductionCircles productionPrice')
+            .selectAll("circle")
+            .data(usArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return productionPriceXScale(d.Price); })
+            .attr('cy',function(d) {return productionYScale(d.CapitaProduction); })
+            .on("mouseover",function(d) {
+                d3.select('.canadaProductionCircles')
+                    .style('opacity',0.2);
+
+                productionGraph.append("text")
+                            .attr('x',function() { return productionPriceXScale(d.Price)+10; })
+                            .attr('y',function() {return productionYScale(d.CapitaProduction)+5; })
+                            .attr('id','j'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.canadaProductionCircles')
+                    .style('opacity',1);
+                d3.select("#j"+d.Year).remove();
+            });
+
+        productionGraph.append('g')
+            .attr('class','canadaProductionCircles productionPrice')
+            .selectAll("circle")
+            .data(canadaArray)
+            .enter().append("circle")
+            .attr('r',5)
+            .attr('cx',function(d) {return productionPriceXScale(d.Price); })
+            .attr('cy',function(d) {return productionYScale(d.CapitaProduction); })
+            .on("mouseover",function(d) {
+                d3.select('.usProductionCircles')
+                    .style('opacity',0.2);
+
+                productionGraph.append("text")
+                            .attr('x',function() { return productionPriceXScale(d.Price)-45; })
+                            .attr('y',function() {return productionYScale(d.CapitaProduction)+10; })
+                            .attr('id','k'+d.Year)
+                            .text(function() { return "$"+d.Price.toFixed(2); });
+            })
+            .on("mouseout",function(d) {
+                d3.select('.usProductionCircles')
+                    .style('opacity',1);
+                d3.select("#k"+d.Year).remove();
+            });
+
+    });
+
+</script>
+
+<!-- <script>
+    //production graphs setup
     var productionWidth = 500;
     var productionHeight = 400;
     var usProductionGraph = d3.select("#comparing-production-us")
@@ -260,6 +1143,7 @@
                         .attr("width",productionWidth)
                         .attr("height",productionHeight);
 
+    //cost graphs setup
     var costWidth = 500;
     var costHeight = 400;
     var usCostGraph = d3.select("#comparing-costs-us")
@@ -270,6 +1154,7 @@
                         .attr("width",costWidth)
                         .attr("height",costHeight);
 
+    //profit graphs setup
     var profitWidth = 500;
     var profitHeight = 400;
     var usFarmProfitGraph = d3.select("#comparing-farm-profits-us")
@@ -317,8 +1202,12 @@
 
         console.log(usProductionArray);
 
+        // usXScale = d3.scaleLinear()
+        //                         .domain([2.5,3.9])
+        //                         .range([100,productionWidth-30]);
+
         usXScale = d3.scaleLinear()
-                                .domain([2.5,3.9])
+                                .domain([2000,2016])
                                 .range([100,productionWidth-30]);
 
         // usProductionyScale = d3.scaleLinear()
@@ -330,15 +1219,41 @@
                                 .range([30,productionHeight-50]);
 
         var usProductionLine = d3.area()
-                    .x(d => usXScale(d.Price))
+                    .x(d => usXScale(d.Year))
                     .y(d => usProductionyScale(d.Production));
 
         usProductionGraph.selectAll("circle")
             .data(usProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return usXScale(d.Price); })
+            .attr('cx',function(d) {return usXScale(d.Year); })
             .attr('cy',function(d) {return usProductionyScale(d.Production); })
+
+        // // get the x and y values for least squares
+        // var usProductionX = d3.range(function(d) {console.log(d); length + 1});
+        // var usProductionY = data.map(function(d) { return parseFloat(d['rate']); });
+        
+        // var leastSquaresCoeff = leastSquares(xSeries, ySeries);
+        
+        // // apply the reults of the least squares regression
+        // var x1 = xLabels[0];
+        // var y1 = leastSquaresCoeff[0] + leastSquaresCoeff[1];
+        // var x2 = xLabels[xLabels.length - 1];
+        // var y2 = leastSquaresCoeff[0] * xSeries.length + leastSquaresCoeff[1];
+        // var trendData = [[x1,y1,x2,y2]];
+        
+        // var trendline = svg.selectAll(".trendline")
+        //     .data(trendData);
+            
+        // trendline.enter()
+        //     .append("line")
+        //     .attr("class", "trendline")
+        //     .attr("x1", function(d) { return xScale(d[0]); })
+        //     .attr("y1", function(d) { return yScale(d[1]); })
+        //     .attr("x2", function(d) { return xScale(d[2]); })
+        //     .attr("y2", function(d) { return yScale(d[3]); })
+        //     .attr("stroke", "black")
+        //     .attr("stroke-width", 1);
 
         // usProductionGraph.append("path")
         //     .attr("d",usProductionLine(usProductionArray))
@@ -380,7 +1295,7 @@
             .data(usProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return usXScale(d.Price); })
+            .attr('cx',function(d) {return usXScale(d.Year); })
             .attr('cy',function(d) {return usCostyScale(d.Cost); })
 
          //add axes
@@ -491,7 +1406,7 @@
             .data(usProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return usXScale(d.Price); })
+            .attr('cx',function(d) {return usXScale(d.Year); })
             .attr('cy',function(d) {return usGallonProfityScale(d.GallonProfit); })
 
          //add axes
@@ -541,8 +1456,12 @@
         };
         console.log(canadaProductionArray);
 
+        // canadaXScale = d3.scaleLinear()
+        //                         .domain([3.5,9.5])
+        //                         .range([100,productionWidth-30]);
+
         canadaXScale = d3.scaleLinear()
-                                .domain([3.5,9.5])
+                                .domain([2000,2014])
                                 .range([100,productionWidth-30]);
 
         canadaProductionyScale = d3.scaleLinear()
@@ -563,7 +1482,7 @@
             .data(canadaProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return canadaXScale(d.Price); })
+            .attr('cx',function(d) {return canadaXScale(d.Year); })
             .attr('cy',function(d) {return canadaProductionyScale(d.Production); })
 
          //add axes
@@ -600,7 +1519,7 @@
             .data(canadaProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return canadaXScale(d.Price); })
+            .attr('cx',function(d) {return canadaXScale(d.Year); })
             .attr('cy',function(d) {return canadaCostyScale(d.Cost); })
 
          //add axes
@@ -711,7 +1630,7 @@
             .data(canadaProductionArray)
             .enter().append("circle")
             .attr('r',3)
-            .attr('cx',function(d) {return canadaXScale(d.Price); })
+            .attr('cx',function(d) {return canadaXScale(d.Year); })
             .attr('cy',function(d) {return canadaProfitGallonyScale(d.GallonProfit); })
 
          //add axes
@@ -743,7 +1662,7 @@
     d3.csv('datasets/us-farms-income.csv',usProductionCallback);
     d3.csv('datasets/canada-farms-income.csv',canadaProductionCallback);
 
-</script>
+</script> -->
 
 </body>
 
