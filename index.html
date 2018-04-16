@@ -1,5 +1,7 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
+
+<!-- THIS IS THE FILE FOR THE GRAPH AREA BEING FILLED -->
 
 <head>
   <meta charset="utf-8">
@@ -14,7 +16,7 @@
 
 <p id='title'> Should you move to Canada? </p>
 
-<div id='part1'> 
+<div id='part1'>
     <p class='header'>Prices Here and There</p>
     <p>Hover over to see exact item name.</p>
     <figure>
@@ -99,7 +101,7 @@
     <svg id='comparing-gallon-profits-canada'></svg>
 </div> -->
 
-<script> 
+<script>
 
    function country() {
         var us = document.getElementById("usPrices");
@@ -128,7 +130,7 @@
     }
 
     function callback1(err,data) {
-        
+
         //consulted https://bl.ocks.org/mbostock/3884955
         var items = data.columns.slice(1).map(function(item) {
             return {
@@ -153,7 +155,7 @@
         var yScale1 = d3.scaleLinear()
                         .domain([0,9.3])
                         .range([550,50]);
-                
+
         var zScale1 = d3.scaleOrdinal(d3.schemeCategory20b)
                         .domain(items.map(function(items) { return items.items; }));
 
@@ -162,11 +164,11 @@
             .y(d => yScale1(d.Price));
 
         if (items[0].prices[0].Price == 3.003) {
-            
+
             var USPricesGraph = d3.select("#usPrices");
 
             //add gridlines
-            USPricesGraph.append("g")         
+            USPricesGraph.append("g")
                 .attr("class","vLines")
                 .attr("transform","translate(0,50)")
                 .call(d3.axisBottom(xScale1)
@@ -210,7 +212,7 @@
             var CanPricesGraph = d3.select("#canPrices");
 
             //add gridlines
-            CanPricesGraph.append("g")         
+            CanPricesGraph.append("g")
                 .attr("class","vLines")
                 .attr("transform","translate(0,50)")
                 .call(d3.axisBottom(xScale1)
@@ -379,11 +381,11 @@
     var queue = d3.queue()
                     .defer(d3.csv, 'datasets/us-farms-income.csv')
                     .defer(d3.csv, 'datasets/canada-farms-income.csv');
-    
+
     queue.awaitAll(function(error, data) {
-        
+
         if (error) throw error;
-        
+
         var usData = data[0];
         var canadaData = data[1];
 
@@ -628,12 +630,12 @@
                         .domain([3.8,0])
                         .range([10,450]);
 
-        var usCostArea = d3.area() 
+        var usCostArea = d3.area()
                         .x(d => usCostTimeXScale(d.Year))
                         .y0(450)
                         .y1(d => revenueYScale(d.Cost));
 
-        var usCostLine = d3.line() 
+        var usCostLine = d3.line()
                         .x(d => usCostTimeXScale(d.Year))
                         .y(d => revenueYScale(d.Cost));
 
@@ -642,12 +644,12 @@
                             .y0(450)
                             .y1(d => revenueYScale(d.Revenue));
 
-        var usRevenueLine = d3.line() 
+        var usRevenueLine = d3.line()
                         .x(d => usCostTimeXScale(d.Year))
                         .y(d => revenueYScale(d.Revenue));
 
         // //add gridlines
-        // usCostGraph.append("g")         
+        // usCostGraph.append("g")
         //     .attr("class","hLines")
         //     .attr("transform","translate(50,0)")
         //     .call(d3.axisRight(revenueYScale)
@@ -655,7 +657,7 @@
         //         .tickFormat("")
         //     );
 
-        // canadaCostGraph.append("g")         
+        // canadaCostGraph.append("g")
         //     .attr("class","hLines")
         //     .attr("transform","translate(50,0)")
         //     .call(d3.axisRight(revenueYScale)
@@ -709,17 +711,17 @@
                 .attr("d",usRevenueLine(usArray))
                 .attr('id','usRevenuePath')
                 .attr('class','costTime')
-                .on("mouseover", function() { 
+                .on("mouseover", function() {
                     usHover.style("visibility", "visible");
                     d3.select('#usCostArea')
                       .style('opacity',0.2);
                     d3.select("#usCostPath")
                         .style('opacity',0.2);
                 })
-                .on("mouseout", function() { 
+                .on("mouseout", function() {
                     usHover.style("visibility", "hidden");
                     d3.select('#usCostArea')
-                      .style('opacity',0.4); 
+                      .style('opacity',0.4);
                     d3.select("#usCostPath")
                         .style('opacity',1);
                 })
@@ -729,17 +731,17 @@
                 .attr("d",usCostLine(usArray))
                 .attr('id','usCostPath')
                 .attr('class','costTime')
-                .on("mouseover", function() { 
-                    usHover.style("visibility", "visible"); 
+                .on("mouseover", function() {
+                    usHover.style("visibility", "visible");
                     d3.select('#usRevenueArea')
                       .style('opacity',0.2);
                     d3.select("#usRevenuePath")
                         .style('opacity',0.2);
                 })
-                .on("mouseout", function() { 
-                    usHover.style("visibility", "hidden"); 
+                .on("mouseout", function() {
+                    usHover.style("visibility", "hidden");
                     d3.select('#usRevenueArea')
-                      .style('opacity',0.4); 
+                      .style('opacity',0.4);
                     d3.select("#usRevenuePath")
                         .style('opacity',1);
                 })
@@ -788,15 +790,15 @@
             .attr("d",usRevenueLine(canadaArray))
             .attr('id','canadaRevenuePath')
             .attr('class','costTime')
-            .on("mouseover", function() { 
-                canHover.style("visibility", "visible"); 
+            .on("mouseover", function() {
+                canHover.style("visibility", "visible");
                 d3.select('#canadaCostArea')
                       .style('opacity',0.2);
                 d3.select("#canadaCostPath")
                     .style('opacity',0.2);
             })
-            .on("mouseout", function() { 
-                canHover.style("visibility", "hidden"); 
+            .on("mouseout", function() {
+                canHover.style("visibility", "hidden");
                 d3.select('#canadaCostArea')
                       .style('opacity',0.4);
                 d3.select("#canadaCostPath")
@@ -808,17 +810,17 @@
             .attr("d",usCostLine(canadaArray))
             .attr('id','canadaCostPath')
             .attr('class','costTime')
-            .on("mouseover", function() { 
-                canHover.style("visibility", "visible"); 
+            .on("mouseover", function() {
+                canHover.style("visibility", "visible");
                 d3.select('#canadaRevenueArea')
                       .style('opacity',0.2);
                 d3.select("#canadaRevenuePath")
                     .style('opacity',0.2);
             })
-            .on("mouseout", function() { 
-                canHover.style("visibility", "hidden"); 
+            .on("mouseout", function() {
+                canHover.style("visibility", "hidden");
                 d3.select('#canadaRevenueArea')
-                      .style('opacity',0.4); 
+                      .style('opacity',0.4);
                 d3.select("#canadaCostPath")
                 .style('opacity',1);
             })
@@ -932,7 +934,7 @@
                     .style('opacity',1);
                 d3.select("#c"+d.Year).remove();
             })
-        
+
         canadaCostGraph.append('g')
             .attr('class','canadaRevenueCircles costPrice')
             .selectAll("circle")
@@ -1232,19 +1234,19 @@
         // // get the x and y values for least squares
         // var usProductionX = d3.range(function(d) {console.log(d); length + 1});
         // var usProductionY = data.map(function(d) { return parseFloat(d['rate']); });
-        
+
         // var leastSquaresCoeff = leastSquares(xSeries, ySeries);
-        
+
         // // apply the reults of the least squares regression
         // var x1 = xLabels[0];
         // var y1 = leastSquaresCoeff[0] + leastSquaresCoeff[1];
         // var x2 = xLabels[xLabels.length - 1];
         // var y2 = leastSquaresCoeff[0] * xSeries.length + leastSquaresCoeff[1];
         // var trendData = [[x1,y1,x2,y2]];
-        
+
         // var trendline = svg.selectAll(".trendline")
         //     .data(trendData);
-            
+
         // trendline.enter()
         //     .append("line")
         //     .attr("class", "trendline")

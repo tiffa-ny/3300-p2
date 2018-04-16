@@ -28,18 +28,18 @@ hr {
     font-weight:800;
 }
 
-.hLines line { 
-    stroke: lightgrey; 
+.hLines line {
+    stroke: lightgrey;
     stroke-width:1.5;
-    opacity:0.5; 
+    opacity:0.5;
 }
 
-.hLines path { 
-    stroke-width: 0; 
+.hLines path {
+    stroke-width: 0;
 }
 
 .labels {
-    font-size:16px; 
+    font-size:16px;
 }
 
 #comparing-profits, #comparing-production {
@@ -52,14 +52,14 @@ hr {
     margin-right:30px;
 }
 
-.vLines line { 
-    stroke: lightgrey; 
-    stroke-width:1.5; 
+.vLines line {
+    stroke: lightgrey;
+    stroke-width:1.5;
     opacity:0.5;
 }
 
-.vLines path { 
-    stroke-width: 0; 
+.vLines path {
+    stroke-width: 0;
 }
 
 .axisGrey line, .axisHidden line  {
@@ -72,7 +72,7 @@ hr {
 
 .axisGrey text, .axisCenter text {
   fill: grey;
-}  
+}
 
 .axisHidden text {
     fill: transparent;
@@ -88,13 +88,13 @@ hr {
 }
 
 figure {
-    float: right; 
+    float: right;
     margin-right:100px;
 }
 
 #priceLabels {
-    opacity: 0; 
-    font-size:20px; 
+    opacity: 0;
+    font-size:20px;
     font-weight:800;
 }
 
@@ -120,7 +120,7 @@ figure {
 }
 
 /* Hide default HTML checkbox */
-.toggleContainer .generalToggle { 
+.toggleContainer .generalToggle {
     display:none;
 }
 
@@ -266,3 +266,51 @@ figure {
     stroke-width: 3;
     fill:none;
 }
+
+/* part2 CSS START */
+
+.bar_positive {
+	fill: red;
+}
+
+.bar_negative {
+	fill: blue;
+}
+
+.axis text {
+	font: 12px sans-serif;
+}
+
+/* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b */
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+/*Used to display information about bars for percentChange graph*/
+div.tooltip {
+			position: absolute;
+			text-align: right;
+			width: 140px;
+			height: 55px;
+			padding: 6px;
+			font: 12px sans-serif;
+			background: white;
+			border: 1px solid lightgray;
+			border-radius: 8px;
+			pointer-events: none;
+	}
+
+#content {
+	width: 500px;
+	padding-left: 50px;
+	font: 14px sans-serif;
+	font-weight: bold;
+	line-height: 1.5em;
+}
+/* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b */
+
+/* part2 CSS END */

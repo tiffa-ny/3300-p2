@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title> INFO3300 Project 2 </title>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+  <link rel='stylesheet' type='text/css' href='css/style.css'>
+</head>
+
+  <body>
+
+    <div id='part2'>
+        <p class='header'> How Much More Expensive is Canada, Really? </p>
+        <h2>Percent Change of Product Prices in Canada vs. The United States</h2>
+
+        <!-- Make sure to copy the "consulted" part when adding to new script -->
+        <!-- Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b -->
+        <script type="text/javascript">
+        	var margin = {top: 30, right: 40, bottom: 50, left: 40},
+      		width = 1200 - margin.left - margin.right,
+      		height = 720 - margin.top - margin.bottom;
+
+          var xScale = d3.scaleLinear()
+      		  .range([0, width]);
+
+      	  var yScale = d3.scaleBand()
+      		  .rangeRound([0, height])
+      		  .paddingInner(0.1);
+
+      	  var div = d3.select("#part2").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+          d3.csv("datasets/percentChange.csv", makePositive, function(error, data) {
+            console.log(data);
+
+            //x is percent change because will be vertical bar graph
+            //nice because is long decimal
+            xScale.domain(d3.extent(data, function(d){return d.percentChange;})).nice();
+		        yScale.domain(data.map(function(d){return d.itemName;}));
+
+            //So we dont need to alter the x-tick marks later
+            var displayPercentage = d3.format("1.0%");
+
+		        var xAxis = d3.axisBottom()
+    				  .scale(xScale)
+    				  .tickFormat(displayPercentage);
+
+            var svg = d3.select("#part2")
+  		        .append("svg")
+                //Adding back the margins subtracted before to get back to 1200
+                .attr("width",width + margin.left + margin.right)
+                .attr("height",height + margin.top + margin.bottom)
+  			      .append("g")
+                .attr("transform","translate("+margin.left+","+margin.top+")");
+
+            svg.selectAll(".bar")
+              .data(data)
+              .enter()
+              .append("rect")
+                //Setting CSS name for styling colors
+              	.attr("class",function(d){return "bar bar_"+(d.percentChange<0 ? "negative":"positive"); })
+              	.attr("x",function(d){return xScale(Math.min(0,d.percentChange));})
+              	.attr("y",function(d){return yScale(d.itemName);})
+
+                //Consulted https://github.com/d3/d3-scale for width/height
+              	.attr("width",function(d){return Math.abs(xScale(d.percentChange)-xScale(0));})
+                //Returns width of each band
+              	.attr("height",yScale.bandwidth())
+
+              //tooltip usede to give information on the certain bar while
+              //greying out the rest of them
+              .on("mouseover", function(d) {
+              	div.transition()
+              	 .duration(200)
+                 .style("opacity", 1.0);
+
+                //Function used to display dollar sign in the tooltip
+              	div.html("Canada Price: $" + d3.format(",.2f")(d.canadaPrice)+"<br/>"+
+                         "United States Price: $" + d3.format(",.2f")(d.usPrice)+"<br/>"+
+                         "Net change: $" + d3.format(",.2f")(d.netChange)+"<br/>"+
+                         "<b>Percent change: " + d3.format("1.0%")(d.percentChange)+"</b><br/>")
+
+                /* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b
+                for formatting here */
+                .style("left",(d3.event.pageX)+"px")
+                .style("top",(d3.event.pageY - 28)+"px");
+              })
+              //Get rid of tooltip
+              .on("mouseout", function(d){
+                div.transition()
+              		.duration(500)
+              		.style("opacity", 0);
+              });
+
+            svg.append("g")
+        			.attr("class", "x axis")
+        			.attr("transform", "translate(0," + height + ")")
+        			.call(xAxis);
+
+          //Referenced https://bl.ocks.org/d3noob/23e42c8f67210ac6c678db2cd07a747e
+            svg.append("text")
+              .attr("transform",
+                    "translate("+(width/2)+","+(height+margin.top+10)+")")
+              .style("text-anchor", "middle")
+              .text("Percent Change (%)");
+
+        		// add tickNegative to color the bars blue (for U.S.)
+        		var tickNeg = svg.append("g")
+                .attr("class", "y axis")
+                //Moving axis to middle of the screen using xScale
+                .attr("transform", "translate("+xScale(0)+",0)")
+                .call(d3.axisLeft(yScale))
+              .selectAll(".tick")
+              .filter(function(d, i){return data[i].percentChange<0;});
+
+
+          /* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b */
+        		tickNeg.select("line")
+              .attr("x2", 6);
+
+        		tickNeg.select("text")
+              .attr("x", 9)
+              .style("text-anchor", "start");
+        	});
+
+          function makePositive(d) {
+            d.percentChange = +d.percentChange;
+            return d;
+          }
+        </script>
+
+    </div>
+
+  </body>
+
+</html>
