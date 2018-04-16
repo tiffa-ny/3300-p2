@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 
+<!-- FILE FOR PERCENT-CHANGE GRAPH -->
+
 <head>
   <meta charset="utf-8">
   <title> INFO3300 Project 2 </title>
@@ -56,7 +58,7 @@
   			      .append("g")
                 .attr("transform","translate("+margin.left+","+margin.top+")");
 
-            svg.selectAll(".bar")
+            var barLines = svg.selectAll(".bar")
               .data(data)
               .enter()
               .append("rect")
@@ -70,30 +72,41 @@
                 //Returns width of each band
               	.attr("height",yScale.bandwidth())
 
-              //tooltip usede to give information on the certain bar while
-              //greying out the rest of them
-              .on("mouseover", function(d) {
-              	div.transition()
-              	 .duration(200)
-                 .style("opacity", 1.0);
+                //tooltip usede to give information on the certain bar while
+                //greying out the rest of them
+                .on("mouseover", function(d) {
+                  var itemDisplay = barLines.filter(function(f) {
+                      return f.itemName != d.itemName;
+                  });
+                  itemDisplay.style("opacity",0.2);
 
-                //Function used to display dollar sign in the tooltip
-              	div.html("Canada Price: $" + d3.format(",.2f")(d.canadaPrice)+"<br/>"+
-                         "United States Price: $" + d3.format(",.2f")(d.usPrice)+"<br/>"+
-                         "Net change: $" + d3.format(",.2f")(d.netChange)+"<br/>"+
-                         "<b>Percent change: " + d3.format("1.0%")(d.percentChange)+"</b><br/>")
+                	div.transition()
+                	 .duration(200)
+                   .style("opacity", 1.0);
 
-                /* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b
-                for formatting here */
-                .style("left",(d3.event.pageX)+"px")
-                .style("top",(d3.event.pageY - 28)+"px");
-              })
-              //Get rid of tooltip
-              .on("mouseout", function(d){
-                div.transition()
-              		.duration(500)
-              		.style("opacity", 0);
-              });
+                  //Function used to display dollar sign in the tooltip
+                	div.html("Canada Price: $" + d3.format(",.2f")(d.canadaPrice)+"<br/>"+
+                           "United States Price: $" + d3.format(",.2f")(d.usPrice)+"<br/>"+
+                           "Net change: $" + d3.format(",.2f")(d.netChange)+"<br/>"+
+                           "<b>Percent change: " + d3.format("1.0%")(d.percentChange)+"</b><br/>")
+
+                  /* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b
+                    for formatting here */
+                    .style("left",(d3.event.pageX)+"px")
+                    .style("top",(d3.event.pageY - 28)+"px");
+                })
+
+                //Get rid of tooltip
+                .on("mouseout", function(d){
+                  var itemDisplay = barLines.filter(function(f) {
+                      return f.itemName != d.itemName;
+                  })
+                  itemDisplay.style("opacity",1)
+
+                  div.transition()
+                		.duration(500)
+                		.style("opacity", 0);
+                });
 
             svg.append("g")
         			.attr("class", "x axis")
