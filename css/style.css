@@ -293,9 +293,9 @@ figure {
 /*Used to display information about bars for percentChange graph*/
 div.tooltip {
 			position: absolute;
-			text-align: right;
+			text-align: left;
 			width: 140px;
-			height: 55px;
+			height: 70px;
 			padding: 6px;
 			font: 12px sans-serif;
 			background: white;

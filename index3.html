@@ -20,12 +20,18 @@
         <!-- Make sure to copy the "consulted" part when adding to new script -->
         <!-- Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b -->
         <script type="text/javascript">
-        	var margin = {top: 30, right: 40, bottom: 50, left: 40},
+        	var margin = {top: 50, right: 40, bottom: 25, left: 40},
       		width = 1200 - margin.left - margin.right,
       		height = 720 - margin.top - margin.bottom;
 
           var yScale = d3.scaleLinear()
       		  .range([height,0]);
+
+          var yScaleTop = d3.scaleLinear()
+            .range([(yScale(0) -155), (yScale(0)-height)-30]);
+
+          var yScaleBottom = d3.scaleLinear()
+            .range([(0+ yScale(0) -30), height -90]);
 
       	  var xScale = d3.scaleBand()
       		  .rangeRound([0, width])
@@ -36,19 +42,27 @@
             .style("opacity", 0);
 
           d3.csv("datasets/percentChange.csv", makePositive, function(error, data) {
-            console.log(data);
 
             //x is percent change because will be vertical bar graph
             //nice because is long decimal
             yScale.domain(d3.extent(data, function(d){return d.percentChange;})).nice();
 		        xScale.domain(data.map(function(d){return d.itemName;}));
 
+            yScaleTop.domain([0, 1.6]);
+            yScaleBottom.domain([-.223, 0]);
+
             //So we dont need to alter the x-tick marks later
             var displayPercentage = d3.format("1.0%");
 
-		        var yAxis = d3.axisLeft()
-    				  .scale(yScale)
+		        var yAxisTop = d3.axisLeft()
+    				  .scale(yScaleTop)
     				  .tickFormat(displayPercentage);
+
+            var yAxisBottom = d3.axisLeft()
+    				  .scale(yScaleBottom)
+              .ticks(4)
+    				  .tickFormat(displayPercentage);
+              //.ticks(-10);
 
             var svg = d3.select("#part2")
   		        .append("svg")
@@ -65,12 +79,21 @@
                 //Setting CSS name for styling colors
               	.attr("class",function(d){return "bar bar_"+(d.percentChange<0 ? "negative":"positive"); })
               	.attr("x",function(d){return xScale(d.itemName);})
-              	.attr("y",function(d){return yScale(Math.max(0,d.percentChange));})
+              	.attr("y",function(d){
+                  if(d.percentChange > 0 ){
+                    return yScale(Math.max(0,d.percentChange))-30;
+                  }
+                  else if(d.percentChange < 0){
+                    return yScale(Math.max(0,d.percentChange))+30;
+                  }
+                })
 
                 //Consulted https://github.com/d3/d3-scale for width/height
               	.attr("width",xScale.bandwidth())
                 //Returns width of each band
-              	.attr("height",function(d){return Math.abs(yScale(d.percentChange)-yScale(0));})
+              	.attr("height",function(d){
+                    return Math.abs(yScale(d.percentChange)-yScale(0));
+                })
                 // function(d,i){ return height - y(d.percent); });
 
                 //tooltip usede to give information on the certain bar while
@@ -86,7 +109,8 @@
                    .style("opacity", 1.0);
 
                   //Function used to display dollar sign in the tooltip
-                	div.html("Canada Price: $" + d3.format(",.2f")(d.canadaPrice)+"<br/>"+
+                	div.html("Item Name: " + d.itemName.toLowerCase()+"<br/>" +
+                           "Canada Price: $" + d3.format(",.2f")(d.canadaPrice)+"<br/>"+
                            "United States Price: $" + d3.format(",.2f")(d.usPrice)+"<br/>"+
                            "Net change: $" + d3.format(",.2f")(d.netChange)+"<br/>"+
                            "<b>Percent change: " + d3.format("1.0%")(d.percentChange)+"</b><br/>")
@@ -110,7 +134,10 @@
                 });
 
             svg.append("g")
-        			.call(yAxis);
+        			.call(yAxisTop);
+
+            svg.append("g")
+        			.call(yAxisBottom);
 
           /*Referenced https://bl.ocks.org/d3noob/23e42c8f67210ac6c678db2cd07a747e
             svg.append("text")
@@ -121,20 +148,38 @@
           */
 
         		// add tickNegative to color the bars blue (for U.S.)
-        		var tickNeg = svg.append("g")
-                .attr("class", "yaxis")
-                .call(d3.axisLeft(yScale))
-                .selectAll(".tick")
-                .filter(function(d, i){return !data[i].percentChange;});
+
 
 
           /* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b */
-        		tickNeg.select("line")
-              .attr("x2", 6);
 
-        		tickNeg.select("text")
-              .attr("x", 9)
-              .style("text-anchor", "start")
+            var myImages = svg.append("g")
+              .selectAll('image')
+              .data([
+                "images/milk.jpg",
+                "images/chicken.jpg",
+                "images/flour.jpg",
+                "images/eggs.png",
+                "images/groundBeef.jpg",
+                "images/porkchops.png",
+                "images/bread.jpg",
+                "images/apples.png",
+                "images/roundSteak.png",
+                "images/bananas.png",
+                "images/cheese.png",
+                "images/macaroni.jpg",
+                "images/bacon.png",
+                "images/potatoes.jpg",
+                "images/sugar.jpg"])
+              .enter().append('image')
+              .attr("xlink:href", function(d){
+                return d;
+              })
+              .attr("width", 55)
+              .attr("height", 55)
+              .data([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+              .attr('x', function(d){return (d*75) - 70})
+              .attr('y', yScale(0) -27);
         	});
 
           function makePositive(d) {
