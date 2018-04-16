@@ -24,11 +24,11 @@
       		width = 1200 - margin.left - margin.right,
       		height = 720 - margin.top - margin.bottom;
 
-          var xScale = d3.scaleLinear()
-      		  .range([0, width]);
+          var yScale = d3.scaleLinear()
+      		  .range([height,0]);
 
-      	  var yScale = d3.scaleBand()
-      		  .rangeRound([0, height])
+      	  var xScale = d3.scaleBand()
+      		  .rangeRound([0, width])
       		  .paddingInner(0.1);
 
       	  var div = d3.select("#part2").append("div")
@@ -40,14 +40,14 @@
 
             //x is percent change because will be vertical bar graph
             //nice because is long decimal
-            xScale.domain(d3.extent(data, function(d){return d.percentChange;})).nice();
-		        yScale.domain(data.map(function(d){return d.itemName;}));
+            yScale.domain(d3.extent(data, function(d){return d.percentChange;})).nice();
+		        xScale.domain(data.map(function(d){return d.itemName;}));
 
             //So we dont need to alter the x-tick marks later
             var displayPercentage = d3.format("1.0%");
 
-		        var xAxis = d3.axisBottom()
-    				  .scale(xScale)
+		        var yAxis = d3.axisLeft()
+    				  .scale(yScale)
     				  .tickFormat(displayPercentage);
 
             var svg = d3.select("#part2")
@@ -64,13 +64,14 @@
               .append("rect")
                 //Setting CSS name for styling colors
               	.attr("class",function(d){return "bar bar_"+(d.percentChange<0 ? "negative":"positive"); })
-              	.attr("x",function(d){return xScale(Math.min(0,d.percentChange));})
-              	.attr("y",function(d){return yScale(d.itemName);})
+              	.attr("x",function(d){return xScale(d.itemName);})
+              	.attr("y",function(d){return yScale(Math.max(0,d.percentChange));})
 
                 //Consulted https://github.com/d3/d3-scale for width/height
-              	.attr("width",function(d){return Math.abs(xScale(d.percentChange)-xScale(0));})
+              	.attr("width",xScale.bandwidth())
                 //Returns width of each band
-              	.attr("height",yScale.bandwidth())
+              	.attr("height",function(d){return Math.abs(yScale(d.percentChange)-yScale(0));})
+                // function(d,i){ return height - y(d.percent); });
 
                 //tooltip usede to give information on the certain bar while
                 //greying out the rest of them
@@ -109,25 +110,22 @@
                 });
 
             svg.append("g")
-        			.attr("class", "x axis")
-        			.attr("transform", "translate(0," + height + ")")
-        			.call(xAxis);
+        			.call(yAxis);
 
-          //Referenced https://bl.ocks.org/d3noob/23e42c8f67210ac6c678db2cd07a747e
+          /*Referenced https://bl.ocks.org/d3noob/23e42c8f67210ac6c678db2cd07a747e
             svg.append("text")
               .attr("transform",
                     "translate("+(width/2)+","+(height+margin.top+10)+")")
               .style("text-anchor", "middle")
-              .text("Percent Change (%)");
+              .text("Item");
+          */
 
         		// add tickNegative to color the bars blue (for U.S.)
         		var tickNeg = svg.append("g")
-                .attr("class", "y axis")
-                //Moving axis to middle of the screen using xScale
-                .attr("transform", "translate("+xScale(0)+",0)")
+                .attr("class", "yaxis")
                 .call(d3.axisLeft(yScale))
-              .selectAll(".tick")
-              .filter(function(d, i){return data[i].percentChange<0;});
+                .selectAll(".tick")
+                .filter(function(d, i){return !data[i].percentChange;});
 
 
           /* Consulted: https://bl.ocks.org/stevenwmarks/c23bf3940bc5f1ee4027ccc72097a03b */
@@ -136,7 +134,7 @@
 
         		tickNeg.select("text")
               .attr("x", 9)
-              .style("text-anchor", "start");
+              .style("text-anchor", "start")
         	});
 
           function makePositive(d) {
