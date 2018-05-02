@@ -1,0 +1,118 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title> INFO3300 Project 2 </title>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans" />
+  <link rel='stylesheet' type='text/css' href='css/style.css'>
+</head>
+
+<body>
+
+<p id='title'> 
+    Dairy Diaries: The
+    <img height='100px' width='71px' src='images/milk-title-icon.png' alt='milk-icon' style='vertical-align:-37px'>
+    Phenomenon
+</p>
+
+<div id='part1'> 
+    <p class='header'>Chapter I: Comparing Consumption</p>
+    <p class='desc'> In recent months (perhaps since November 2016?), there has been an upswing of comments expressing desires to move to Canada. This led us to wonder: what would it be like to actually live in Canada? We wanted to look at this problem through the lens of cost of living - in particular, the cost of food. To start off, we decided to explore prices over time of common food items to uncover any unexpected trends. Pay special attention to the darker vertical line on the Canada graph! </p>
+    <div id='priceContainer'>
+        <svg width='630' height='600' id='usPrices'></svg>
+        <svg width='630' height='600' id='canPrices'></svg>
+    </div>
+    <p class='desc'>Right away, milk jumps out as drastically varying in price between the United States and Canada.</p>
+</div>
+<hr>
+
+<div id='part2'>
+    <p class='header'>Chapter II. Contrasting Prices </p>
+    <p class='desc'> Using the most recent month of price data, we calculated the percentage differences in item prices between the United States and Canada. U.S. prices are compared against Canadian prices, meaning that an item that is more expensive in Canada will show a price increase.
+    <svg id='comparing-percentages' width='1200' height='500'></svg>
+    <p class='desc'> This graph further confirmed our suspicions that there was something strange going on with milk. For the rest of our project, we decided to zoom in on the dairy industry.</p>
+</div>
+<hr id='hr2'>
+
+<div id='part3'>
+
+    <p class='header'> Chapter III. Taking A Closer Look at Milk </p>
+
+    <p class='desc'> In all the visualizations below, we represented <span class='blue'> United States </span> data with shades of<span class='blue'> blue </span> and <span class='red'> Canadian </span> data with shades of <span class='red'>red</span>. For <b>relationships over time</b>, the hover text corresponds to the variable on the <b>y axis</b>. For <i>relationships over price</i>, the hover text corresponds to the variable on the <i>x axis</i>, which is always price.</p>
+
+    <p class='desc'> Going into this section, our assumption was that <b> market price was a product of the free market </b> - in other words, dairy producers had no control over the prices that their products sold at. This is a baseline assumption in economics because most markets are price-competitive.</p>
+
+    <p class='section'> <span class='bold'> Part 1: </span> Looking at Profit </p>
+
+        <p class='desc'> To start off, we wanted to look at the most common metric for financial success: profit. Profit is a measure of how effective firms are at managing costs and production to maximize revenues. You can toggle to see the relationship between profits and time or between profits and prices. </p>
+
+        <p class='toggleLabel1'>Year</p>
+        <p class='toggleLabel2'>Price</p>
+        <label class="toggleContainer">
+            <input type="checkbox" id='profitToggle' class = 'generalToggle'onchange='toggleProfit()'>
+            <span class="toggle round"></span>
+        </label>
+
+        <svg id='comparing-profits'></svg>
+
+        <p class='desc'> In Canada, profits and prices increase together. This is strange because profits should not affect prices, yet the data suggests otherwise. Clearly, this comparison wasn't the full story. Are profits changing because of costs, or production, or something else? We decided to decompose profits into its three pieces - revenues, costs, and production - and look at each in turn. </p>
+
+    <p class='section'> <span class='bold'> Step 2: </span> Counting Costs </p>
+
+        <p class='desc'> To see how costs were changing over time, we visualized revenues and costs per gallon to compare overlapping areas. As above, you can toggle to compare costs and time versus costs and prices.</p>
+
+        <p class='toggleLabel1'>Year</p>
+        <p class='toggleLabel2'>Price</p>
+        <label class="toggleContainer">
+            <input type="checkbox" id='costToggle' class='generalToggle' onchange='toggleCost()'>
+            <span class="toggle round"></span>
+        </label>
+
+        <div id='comparing-costs'>
+            <svg id='us-comparing-costs'></svg>
+            <svg id='canada-comparing-costs'></svg>
+        </div>
+
+        <p class='desc'> Since the price of milk in the United States is relatively steady and costs are steadily increasing, this tells us that the fluctuations in revenue must be caused by a third unknown variable. Costs in Canada, on the other hand, are increasing as prices increase, which is again a relationship we did not expect. It is unclear whether the high revenues are due to high prices or massive production, which leads us to the final part of our visualization - looking at production in both countries. </p>
+
+    <p class='section'> <span class='bold'> Step 3: </span> Examining Production </p>
+
+        <p class='desc'> Try comparing the trend in production to the trend in revenue for the United States, and then for Canada.</p>
+
+        <p class='toggleLabel1'>Year</p>
+        <p class='toggleLabel2'>Price</p>
+        <label class="toggleContainer">
+            <input type="checkbox" id='productionToggle' class = 'generalToggle'onchange='toggleProduction()'>
+            <span class="toggle round"></span>
+        </label>
+
+        <svg id='comparing-production'></svg>
+
+        <p class='desc'> How is it possible that revenues in Canada are increasing while production is decreasing? The answer lies in the <b> production over prices graph.</b> In America, production increases as price increases, keeping prices low. <b>In Canada, however, production decreases as price increases. Less production drives prices up, allowing farms to control market prices! </b></p>
+
+        <p class='desc' id='takeaway'>After doing some research, we found that this practice is officially known as <b>Supply Management</b>, and it involves the government setting production quotas on dairy products. This goes back to the beginning of the project, where you can see that milk prices in Canada stayed steady until 2002 and then started increasing rapidly (remember the line?). Our guess is that the 2002 ruling  caused dairy producers to worry, as export revenue would now decrease without supplementary subsidies. To compensate, the government imposed dairy production quotas to drive up prices and increase domestic revenue, which would outweigh any loss in exports. This shift can be seen in every graph over time in this part. Clearly, this strategy was super-effective - to the detriment of the Canadian consumer.</p> 
+
+    <p class='section'> <span class='bold'> Bonus: </span> Less Overall Production, More Production per Farm!  </p>
+
+        <p class='desc'> After seeing the results above, we were curious about how many gallons of milk each <b>farm</b> was producing. Given the trends, we assumed that production per farm would be increasing in the United States and decreasing in Canada.</p>
+
+        <svg id='bonus1'></svg>
+        <svg id='bonus2'></svg>
+
+        <p class='desc'>The dwindling number of farms means that consumers have less products to choose from, so demand stays high even when prices are raised. Farms in Canada produce more at a higher price, further compounding their profits! It seems that the dairy producers of Canada are consolidating into a <b>monopoly market,</b> shifting the price-setting power <b>from the consumers to the hands of the producers.</b> </p>
+
+</div>
+<hr>
+
+<p id='names'> Tiffany Wang, tw292 | Adomas Hassan, ah667 | Aditya Rajan, avr32</p>
+
+<script src='scripts/part1.js'></script>
+<script src='scripts/part3.js'></script>
+<script src='scripts/part2.js'></script>
+
+</body>
+
+</html>
